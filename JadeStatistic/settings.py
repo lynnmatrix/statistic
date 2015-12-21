@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'statistic.apps.StatisticConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -76,11 +77,15 @@ WSGI_APPLICATION = 'JadeStatistic.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': 'AutoConfig',
+        'ENGINE': 'sql_server.pyodbc',
+        'USER': 'jadeconfig@ezzrlz8fib',
+        'PASSWORD': '18921311999Mail',
+        'OPTIONS': {
+            'dsn': 'MYDSN',
+        }
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
