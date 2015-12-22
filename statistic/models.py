@@ -366,3 +366,12 @@ class Userrequire(models.Model):
 		managed = False
 		db_table = 'UserRequire'
 
+
+class UserSurvival(models.Model):
+	id = models.AutoField(db_column='Id', primary_key=True)
+	imei = models.CharField(db_column='Imei', max_length=50)  # Field name made lowercase.
+	firsttime = models.DateTimeField(db_column='FirstTime', blank=True, null=True)  # Field name made lowercase.
+	lasttime = models.DateTimeField(db_column='LastTime', blank=True, null=True)  # Field name made lowercase.
+
+	class Meta:
+		db_table = 'UserSurvival'
