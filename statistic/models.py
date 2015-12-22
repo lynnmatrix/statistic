@@ -375,3 +375,12 @@ class UserSurvival(models.Model):
 
 	class Meta:
 		db_table = 'UserSurvival'
+
+
+class AnalyzeRecord(models.Model):
+	id = models.AutoField(primary_key=True)
+	action = models.CharField(db_column='action', max_length=50)
+	time = models.DateTimeField(db_column='time', blank=True, null=True) # Field name made lowercase.
+
+	class Meta:
+		db_table = 'AnalyzeRecord'
