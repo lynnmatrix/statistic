@@ -1,0 +1,21 @@
+
+
+<h1>当日新用户</h1>
+<form action="{% url 'active' %}" method="post">
+	{% csrf_token %}
+	<input type="date" value={{ date }} name="date" }>
+	<input type="submit" value="Submit">
+</form>
+
+<table border="1px">
+	    <tr>
+			<th>imei</th>
+			<th>time</th>
+		</tr>
+    {% for log in logs %}
+        <tr>
+			<td>{{ log.imei }}</td>
+			<td>{{ log.time }}</td>
+		</tr>
+    {% endfor %}
+</table>
