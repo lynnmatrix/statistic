@@ -12,6 +12,7 @@ from datetime import timedelta
 import monthdelta as monthdelta
 
 from django.db import models
+from django.utils import timezone
 
 
 class Activedevicelog(models.Model):
@@ -397,7 +398,11 @@ class UserSurvival(models.Model):
 		return self.lasttime + timedelta(weeks=1) > timezone.now()
 
 	def __survival(self, delta):
-		return self.lasttime > self.firsttime + delta
+		end_time = self.firsttime + delta;
+		if end_time <= timezone.now():
+			return self.lasttime > self.firsttime + delta
+		else:
+			return None
 
 
 class AnalyzeRecord(models.Model):

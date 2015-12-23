@@ -26,21 +26,21 @@
 
 <table>
 	<tr>
-		<th>IMEI</th>
-		<th>1天后</th>
-		<th>1周后</th>
-		<th>1月后</th>
-		<th>1年后</th>
-		<th>最近一周</th>
+		<th>IMEI ({{ survival_count.0 }}, 100%)</th>
+		<th>1天后 ({{ survival_count.1 }}, {% widthratio survival_count.1 survival_count.0 100 %}%)</th>
+		<th>1周后 ({{ survival_count.2 }}, {% widthratio survival_count.2 survival_count.0 100 %}%)</th>
+		<th>1月后 ({{ survival_count.3 }}, {% widthratio survival_count.3 survival_count.0 100 %}%)</th>
+		<th>1年后 ({{ survival_count.4 }}, {% widthratio survival_count.4 survival_count.0 100 %}%)</th>
+		<th>最近一周 ({{ survival_count.5 }}, {% widthratio survival_count.5 survival_count.0 100 %}%)</th>
 	</tr>
 	{% for user_survival in survivals %}
 	<tr>
-		<td>{{ user_survival.imei }}</td>
-		<td>{{ user_survival.survival_day }}</td>
-		<td>{{ user_survival.survival_week }}</td>
-		<td>{{ user_survival.survival_month }}</td>
-		<td>{{ user_survival.survival_year }}</td>
-		<td>{{ user_survival.survival_last_week }}</td>
+		<td >{{ user_survival.imei }}</td>
+		<td {%if user_survival.survival_day %} class="cell_survival" {%endif%}>{{ user_survival.survival_day }}</td>
+		<td {%if user_survival.survival_week %} class="cell_survival" {%endif%}>{{ user_survival.survival_week }}</td>
+		<td {%if user_survival.survival_month %} class="cell_survival" {%endif%}>{{ user_survival.survival_month }}</td>
+		<td {%if user_survival.survival_year %} class="cell_survival" {%endif%} >{{ user_survival.survival_year }}</td>
+		<td {%if user_survival.survival_last_week %} class="cell_survival" {%endif%}>{{ user_survival.survival_last_week }}</td>
 	</tr>
 	{% endfor %}
 </table>

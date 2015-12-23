@@ -35,12 +35,36 @@ def __get_request_date(request):
 def user_survivals(request):
 	request_date = __get_request_date(request)
 	user_survivals_data = __get_user_survivals_origin(request_date)
-	return render(request, 'statistic/user_survivals.html', {'survivals': user_survivals_data, 'date': request_date.strftime('%Y-%m-%d')})
+
+	# [total, day,week,month,year, last_week]
+	survival_count = [0, 0, 0, 0, 0, 0]
+
+	for user_survival in user_survivals_data:
+		survival_count[0] += 1
+		if user_survival.survival_day():
+			survival_count[1] += 1
+			if user_survival.survival_week():
+				survival_count[2] += 1
+				if user_survival.survival_month():
+					survival_count[3] += 1
+					if user_survival.survival_year():
+						survival_count[4] += 1
+
+		if user_survival.survival_last_week():
+			survival_count[5] += 1
+
+	logger.info("%r", survival_count)
+
+	return render(request, 'statistic/user_survivals.html', {'survivals': user_survivals_data,
+															 'date': request_date.strftime('%Y-%m-%d'),
+															 'survival_count': survival_count})
 
 
 def __user_survivals_origin(request, date):
 	user_survivals_data = __get_user_survivals_origin(date)
-	return render(request, 'statistic/user_survivals_origin.html', {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d')})
+
+	return render(request, 'statistic/user_survivals_origin.html',
+				  {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d')})
 
 
 def __get_user_survivals_origin(date):
@@ -50,8 +74,8 @@ def __get_user_survivals_origin(date):
 	date_array = date.timetuple()
 	date = timezone.datetime(date_array[0], date_array[1], date_array[2], tzinfo=get_current_timezone())
 
-	user_survivals = UserSurvival.objects.filter(firsttime__range=[date, date + timezone.timedelta(days=1)])
-	return user_survivals
+	user_survivals_data = UserSurvival.objects.filter(firsttime__range=[date, date + timezone.timedelta(days=1)])
+	return user_survivals_data.order_by('lasttime').reverse()
 
 
 def __analyze_survival():
