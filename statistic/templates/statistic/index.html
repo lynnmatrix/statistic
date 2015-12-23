@@ -1,26 +1,39 @@
 {% load tz %}
 {% get_current_timezone as TIME_ZONE %}
 
-<h1>当日新用户</h1>
-时区:{{ TIME_ZONE }}
+{% load staticfiles %}
+<html>
+<head>
+	<title>活跃用户分析</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'statistic/statistic.css' %}"/>
+</head>
+<body>
+
+
+<h1>活跃用户分析</h1>
+
+时区: {{ TIME_ZONE }}
 <form action="{% url 'active' %}" method="post">
 	{% csrf_token %}
+	<label for="date">首次活跃: </label>
 	<input type="date" value={{ date }} name="date" }>
 
-	<input type="submit" value="Submit">
+	<input type="submit" value="查看">
 </form>
 
-<table border="1px">
-	    <tr>
-			<th>imei</th>
-			<th>first_time</th>
-			<th>last_time</th>
-		</tr>
-    {% for user_survival in survivals %}
-        <tr>
-			<td>{{ user_survival.imei }}</td>
-			<td>{{ user_survival.firsttime }}</td>
-			<td>{{ user_survival.lasttime}}</td>
-		</tr>
-    {% endfor %}
+<table>
+	<tr>
+		<th>imei</th>
+		<th>首次活跃时间</th>
+		<th>上次活跃时间</th>
+	</tr>
+	{% for user_survival in survivals %}
+	<tr>
+		<td>{{ user_survival.imei }}</td>
+		<td>{{ user_survival.firsttime }}</td>
+		<td>{{ user_survival.lasttime}}</td>
+	</tr>
+	{% endfor %}
 </table>
+</body>
+</html>

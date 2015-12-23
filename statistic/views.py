@@ -1,7 +1,6 @@
 import logging
 
-import pytz
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 # Create your views here.
 from django.utils import timezone
