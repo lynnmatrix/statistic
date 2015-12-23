@@ -4,5 +4,6 @@ from statistic import views
 
 urlpatterns = [
 	url(r'^$', views.index, name='index'),
-	url(r'^active$', views.active_users, name='active'),
+	url(r'^survival/$', views.user_survivals, name='survival'),
+	url(r'^survival/origin', views.user_survivals_origin, name='survival_origin'),
 ]

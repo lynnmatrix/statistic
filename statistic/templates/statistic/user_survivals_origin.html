@@ -1,0 +1,39 @@
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
+
+{% load staticfiles %}
+<html>
+<head>
+	<title>用户留存</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'statistic/statistic.css' %}"/>
+</head>
+<body>
+
+
+<h1>用户留存</h1>
+
+时区: {{ TIME_ZONE }}
+<form action="{% url 'survival_origin' %}" method="post">
+	{% csrf_token %}
+	<label for="date">首次活跃: </label>
+	<input type="date" value={{ date }} name="date" }>
+
+	<input type="submit" value="查看">
+</form>
+
+<table>
+	<tr>
+		<th>IMEI</th>
+		<th>首次活跃时间</th>
+		<th>上次活跃时间</th>
+	</tr>
+	{% for user_survival in survivals %}
+	<tr>
+		<td>{{ user_survival.imei }}</td>
+		<td>{{ user_survival.firsttime }}</td>
+		<td>{{ user_survival.lasttime}}</td>
+	</tr>
+	{% endfor %}
+</table>
+</body>
+</html>

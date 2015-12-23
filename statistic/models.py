@@ -7,6 +7,10 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from __future__ import unicode_literals
 
+from datetime import timedelta
+
+import monthdelta as monthdelta
+
 from django.db import models
 
 
@@ -376,11 +380,30 @@ class UserSurvival(models.Model):
 	class Meta:
 		db_table = 'UserSurvival'
 
+	def survival_day(self):
+		return self.__survival(timedelta(days=1))
+
+	def survival_week(self):
+		return self.__survival(timedelta(weeks=1))
+
+	def survival_month(self):
+		return self.__survival(monthdelta.monthdelta(1))
+
+	def survival_year(self):
+		return self.__survival(monthdelta.monthdelta(12))
+
+	def survival_last_week(self):
+		from django.utils import timezone
+		return self.lasttime + timedelta(weeks=1) > timezone.now()
+
+	def __survival(self, delta):
+		return self.lasttime > self.firsttime + delta
+
 
 class AnalyzeRecord(models.Model):
 	id = models.AutoField(primary_key=True)
 	action = models.CharField(db_column='action', max_length=50)
-	time = models.DateTimeField(db_column='time', blank=True, null=True) # Field name made lowercase.
+	time = models.DateTimeField(db_column='time', blank=True, null=True)  # Field name made lowercase.
 
 	class Meta:
 		db_table = 'AnalyzeRecord'
