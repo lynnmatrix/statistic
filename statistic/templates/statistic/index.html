@@ -1,21 +1,26 @@
-
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
 
 <h1>当日新用户</h1>
+时区:{{ TIME_ZONE }}
 <form action="{% url 'active' %}" method="post">
 	{% csrf_token %}
 	<input type="date" value={{ date }} name="date" }>
+
 	<input type="submit" value="Submit">
 </form>
 
 <table border="1px">
 	    <tr>
 			<th>imei</th>
-			<th>time</th>
+			<th>first_time</th>
+			<th>last_time</th>
 		</tr>
-    {% for log in logs %}
+    {% for user_survival in survivals %}
         <tr>
-			<td>{{ log.imei }}</td>
-			<td>{{ log.time }}</td>
+			<td>{{ user_survival.imei }}</td>
+			<td>{{ user_survival.firsttime }}</td>
+			<td>{{ user_survival.lasttime}}</td>
 		</tr>
     {% endfor %}
 </table>
