@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.timezone import get_current_timezone
 
-from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival, Deviceemaillog
+from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival, Deviceemaillog, Userconfiglog
 
 logger = logging.getLogger(__name__)
 
@@ -117,9 +117,8 @@ def lost_next_day(request):
 		if user_survival.survival_day() is False:
 			users_lost.append(user_survival.imei)
 
-	logger.info("%r", users_lost)
-
 	user_lost_cause_failure = {}
+	user_emails = {}
 	failure_count = 0
 	for user_lost in users_lost:
 		fail = Deviceemaillog.objects.filter(imei=user_lost).count() <= 0
@@ -128,12 +127,20 @@ def lost_next_day(request):
 			user_lost_cause_failure[user_lost] = True
 		else:
 			user_lost_cause_failure[user_lost] = False
-			
-	logger.info("failure %r", user_lost_cause_failure)
+
+		user_emails[user_lost] = {'success': [], 'fail': []}
+
+	config_logs = Userconfiglog.objects.filter(imei__in=users_lost)
+	for config_log in config_logs:
+		if config_log.issuccess:
+			user_emails[config_log.imei]['success'].append(config_log.email)
+		else:
+			user_emails[config_log.imei]['fail'].append(config_log.email)
 
 	return render(request, "statistic/lost.html", {'date': request_date,
 												   'lost': user_lost_cause_failure,
 												   'ratio': {'total': len(user_lost_cause_failure),
 															 'failure_count': failure_count
-															 }
+															 },
+												   'user_emails': user_emails
 												   })

@@ -296,10 +296,10 @@ class Userconfiglog(models.Model):
 	reporttime = models.DateTimeField(db_column='ReportTime')  # Field name made lowercase.
 	imei = models.CharField(db_column='Imei', max_length=50, blank=True, null=True)  # Field name made lowercase.
 	osversion = models.IntegerField(db_column='OsVersion', blank=True, null=True)  # Field name made lowercase.
-	firstsuccess = models.IntegerField(db_column='FirstSuccess', blank=True, null=True)  # Field name made lowercase.
-	firstappversion = models.CharField(db_column='FirstAppVersion', max_length=50, blank=True,
+	isfirstlogin = models.IntegerField(db_column='IsFirstLogin', blank=True, null=True)  # Field name made lowercase.
+	freshappversion = models.CharField(db_column='FreshAppVersion', max_length=50, blank=True,
 									   null=True)  # Field name made lowercase.
-	firstappchannel = models.CharField(db_column='FirstAppChannel', max_length=50, blank=True,
+	freshappchannel = models.CharField(db_column='FreshAppChannel', max_length=50, blank=True,
 									   null=True)  # Field name made lowercase.
 	appversion = models.CharField(db_column='AppVersion', max_length=50, blank=True,
 								  null=True)  # Field name made lowercase.

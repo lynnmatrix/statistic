@@ -35,7 +35,7 @@
 		时区: {{ TIME_ZONE }}
 		<form id="date_form" action="{% url 'survival' %}" method="post" style="display:flex;flex-direction:column;">
 			{% csrf_token %}
-			<label for="date">
+			<label for="date_survival">
 				首次活跃:
 				<input type="date" value={{ date }} name="date" id="date_survival" }>
 			</label>
