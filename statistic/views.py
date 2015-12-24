@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.timezone import get_current_timezone
 
-from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival
+from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival, Deviceemaillog
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def __get_request_date(request):
 	request_date_str = request.POST.get('date')
 	request_date = None
 	if request_date_str is not None:
-		time_array = timezone.datetime.strptime(request.POST.get('date'), '%Y-%m-%d').timetuple();
+		time_array = timezone.datetime.strptime(request.POST.get('date'), '%Y-%m-%d').timetuple()
 		request_date = timezone.datetime(time_array[0], time_array[1], time_array[2], tzinfo=get_current_timezone())
 	if request_date is None:
 		request_date = timezone.now()
@@ -106,3 +106,34 @@ def __analyze_survival():
 
 	if device_logs.count() > 0:
 		analyze_record.save()
+
+
+def lost_next_day(request):
+	request_date = __get_request_date(request)
+	user_survivals_data = __get_user_survivals_origin(request_date)
+
+	users_lost = []
+	for user_survival in user_survivals_data:
+		if user_survival.survival_day() is False:
+			users_lost.append(user_survival.imei)
+
+	logger.info("%r", users_lost)
+
+	user_lost_cause_failure = {}
+	failure_count = 0
+	for user_lost in users_lost:
+		fail = Deviceemaillog.objects.filter(imei=user_lost).count() <= 0
+		if fail:
+			failure_count += 1
+			user_lost_cause_failure[user_lost] = True
+		else:
+			user_lost_cause_failure[user_lost] = False
+			
+	logger.info("failure %r", user_lost_cause_failure)
+
+	return render(request, "statistic/lost.html", {'date': request_date,
+												   'lost': user_lost_cause_failure,
+												   'ratio': {'total': len(user_lost_cause_failure),
+															 'failure_count': failure_count
+															 }
+												   })

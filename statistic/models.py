@@ -9,11 +9,9 @@ from __future__ import unicode_literals
 
 from datetime import timedelta
 
-import monthdelta as monthdelta
-
+import monthdelta
 from django.db import models
 from django.utils import timezone
-
 
 class Activedevicelog(models.Model):
 	id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.

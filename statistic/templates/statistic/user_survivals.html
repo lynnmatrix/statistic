@@ -9,20 +9,47 @@
 	<meta charset="UTF-8">
 	<title>活跃用户分析</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'statistic/statistic.css' %}"/>
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+
+	<script type="text/javascript" language="javascript">
+        $(document).ready(function () {
+
+            $('#lost_user').click(function () {
+				var start_date_input = $('#date_survival');
+
+				 $('#lost_user_form > [name="date"]').val(start_date_input.val());
+
+				 $('#lost_user_form').submit;
+            });
+        });
+    </script>
+
 </head>
 <body>
 
 
 <h1>活跃用户分析</h1>
 
-时区: {{ TIME_ZONE }}
-<form action="{% url 'survival' %}" method="post">
-	{% csrf_token %}
-	<label for="date">首次活跃: </label>
-	<input type="date" value={{ date }} name="date" }>
+<section style="display:flex; flex-direction:row;margin:10px 10px;justify-content:space-between;">
+	<section>
+		时区: {{ TIME_ZONE }}
+		<form id="date_form" action="{% url 'survival' %}" method="post" style="display:flex;flex-direction:column;">
+			{% csrf_token %}
+			<label for="date">
+				首次活跃:
+				<input type="date" value={{ date }} name="date" id="date_survival" }>
+			</label>
 
-	<input type="submit" value="查看">
-</form>
+			<input type="submit" value="查看">
+		</form>
+	</section>
+
+	<form id="lost_user_form" action="{% url 'lost_next' %}" method="post" style="display:flex;flex-direction:column;">
+		{% csrf_token %}
+		<input type="date" name="date" hidden>
+		<button id="lost_user" style="font-size:1em;margin-left:1em;">查看次日流失用户的邮箱配置情况</button>
+	</form>
+</section>
 
 <table>
 	<tr>

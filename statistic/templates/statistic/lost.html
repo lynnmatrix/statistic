@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<title>次日流失用户情况</title>
+
+	{% load staticfiles %}
+	<link rel="stylesheet" type="text/css" href="{% static 'statistic/statistic.css' %}"/>
+</head>
+<body>
+<h1>次日流失用户情况</h1>
+<h3>首次使用时间:{{date}}</h3>
+<table>
+	<tr>
+		<th>IMEI (共{{ ratio.total }}人)</th>
+		<th>无成功添加的邮箱({{ ratio.failure_count }}, {% widthratio ratio.failure_count ratio.total 100 %}%)</th>
+	</tr>
+	{% for user, fail in lost.items %}
+	<tr>
+		<td >{{ user }}</td>
+		<td {%if fail %} class="cell_survival" {%endif%}>{{ fail }}</td>
+	</tr>
+	{% endfor %}
+</table>
+
+</body>
+</html>
