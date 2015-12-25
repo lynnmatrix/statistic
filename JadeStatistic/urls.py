@@ -17,10 +17,7 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
-from JadeStatistic import settings
-
 urlpatterns = [
-	url(r'^favicon\.ico$', 'django.views.generic.simple.redirect_to', {'url': settings.STATIC_URL+'statistic/favicon.ico'}),
-    url(r'^statistic/', include('statistic.urls')),
-    url(r'^admin/', admin.site.urls),
+	url(r'^statistic/', include('statistic.urls')),
+	url(r'^admin/', admin.site.urls),
 ]
