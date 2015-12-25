@@ -1,4 +1,5 @@
 import logging
+from sets import Set
 
 from django.shortcuts import render
 
@@ -97,6 +98,12 @@ def __analyze_survival():
 			user_survival = UserSurvival.objects.get(imei=log.imei)
 		except UserSurvival.DoesNotExist:
 			user_survival = None
+		except UserSurvival.MultipleObjectsReturned:
+			user_survival_dup = UserSurvival.objects.filter(imei=log.imei)
+			user_survival = user_survival_dup[0]
+			logger.error("duplicate user survival %r", user_survival)
+			for survival in user_survival_dup[1:]:
+				survival.delete()
 
 		if user_survival is None:
 			user_survival = UserSurvival(imei=log.imei, firsttime=log.time)
@@ -119,11 +126,11 @@ def lost_next_day(request):
 
 	user_lost_cause_failure = {}
 	user_emails = {}
-	failure_count = 0
+	all_fail_count = 0
 	for user_lost in users_lost:
 		fail = Deviceemaillog.objects.filter(imei=user_lost).count() <= 0
 		if fail:
-			failure_count += 1
+			all_fail_count += 1
 			user_lost_cause_failure[user_lost] = True
 		else:
 			user_lost_cause_failure[user_lost] = False
@@ -131,16 +138,44 @@ def lost_next_day(request):
 		user_emails[user_lost] = {'success': [], 'fail': []}
 
 	config_logs = Userconfiglog.objects.filter(imei__in=users_lost)
+
 	for config_log in config_logs:
 		if config_log.issuccess:
 			user_emails[config_log.imei]['success'].append(config_log.email)
 		else:
 			user_emails[config_log.imei]['fail'].append(config_log.email)
 
+	all_fail_qq_163 = 0
+	all_success_count = 0
+	all_success_and_single_mailbox_count = 0
+
+	for user, all_fail in user_lost_cause_failure.iteritems():
+		if all_fail:
+			for email in user_emails[user]['fail']:
+				if email.find('qq.com') != -1 or email.find('163.com') != -1 or email.find('126.com') != -1:
+					all_fail_qq_163 += 1
+					break
+		else:
+			success_mailboxes = Set()
+			fail_mailboxes = Set()
+			for email in user_emails[user]['success']:
+				success_mailboxes.add(email)
+			for email in user_emails[user]['fail']:
+				fail_mailboxes.add(email)
+
+			if success_mailboxes.issuperset(fail_mailboxes):
+				all_success_count += 1
+				if len(success_mailboxes) == 1:
+					all_success_and_single_mailbox_count += 1
+
+
 	return render(request, "statistic/lost.html", {'date': request_date,
 												   'lost': user_lost_cause_failure,
 												   'ratio': {'total': len(user_lost_cause_failure),
-															 'failure_count': failure_count
+															 'all_fail_count': all_fail_count,
+															 'all_fail_qq_163': all_fail_qq_163,
+															 'all_success_count': all_success_count,
+															 'all_success_and_single_mailbox_count': all_success_and_single_mailbox_count
 															 },
 												   'user_emails': user_emails
 												   })

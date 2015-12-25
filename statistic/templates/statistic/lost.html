@@ -12,10 +12,13 @@
 <body>
 <h1>次日流失用户情况</h1>
 <h3>首次使用时间:{{date}}</h3>
+<header>
+	{{ ratio }}
+</header>
 <table>
 	<tr>
 		<th>IMEI (共{{ ratio.total }}人)</th>
-		<th>无成功添加的邮箱({{ ratio.failure_count }}, {% widthratio ratio.failure_count ratio.total 100 %}%)</th>
+		<th>无成功添加的邮箱({{ ratio.all_fail_count }}, {% widthratio ratio.all_fail_count ratio.total 100 %}%)</th>
 		<th>emails</th>
 	</tr>
 	{% for user, fail in lost.items %}
