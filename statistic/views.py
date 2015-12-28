@@ -6,6 +6,7 @@ from django.shortcuts import render
 # Create your views here.
 from django.utils import timezone
 from django.utils.timezone import get_current_timezone
+from monthdelta import monthdelta
 
 from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival, Deviceemaillog, Userconfiglog
 
@@ -18,8 +19,9 @@ def index(request):
 
 def user_survivals_origin(request):
 	request_date = __get_request_date(request)
+	interval_unit = __get_request_interval_unit(request)
 
-	return __user_survivals_origin(request, request_date)
+	return __user_survivals_origin(request, request_date, interval_unit)
 
 
 def __get_request_date(request):
@@ -33,9 +35,19 @@ def __get_request_date(request):
 	return request_date
 
 
+def __get_request_interval_unit(request):
+	'''
+	:return: 1 day, 2 week, 3 month
+	'''
+	return request.POST.get('interval_unit', 1)
+
+
 def user_survivals(request):
 	request_date = __get_request_date(request)
-	user_survivals_data = __get_user_survivals_origin(request_date)
+	interval_unit = __get_request_interval_unit(request)
+	user_survivals_data = __get_user_survivals_origin(request_date, interval_unit)
+
+	logger.info("count %d", len(user_survivals_data))
 
 	# [total, day,week,month,year, last_week]
 	survival_count = [0, 0, 0, 0, 0, 0]
@@ -58,24 +70,37 @@ def user_survivals(request):
 
 	return render(request, 'statistic/user_survivals.html', {'survivals': user_survivals_data,
 															 'date': request_date.strftime('%Y-%m-%d'),
-															 'survival_count': survival_count})
+															 'survival_count': survival_count,
+															 'unit': interval_unit})
 
 
-def __user_survivals_origin(request, date):
-	user_survivals_data = __get_user_survivals_origin(date)
+def __user_survivals_origin(request, date, interval_unit):
+	user_survivals_data = __get_user_survivals_origin(date, interval_unit)
 
 	return render(request, 'statistic/user_survivals_origin.html',
-				  {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d')})
+				  {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d'), 'unit': interval_unit})
 
 
-def __get_user_survivals_origin(date):
+def __get_user_survivals_origin(date, interval_unit):
 	__analyze_survival()
 
 	date = timezone.localtime(date)
 	date_array = date.timetuple()
 	date = timezone.datetime(date_array[0], date_array[1], date_array[2], tzinfo=get_current_timezone())
 
-	user_survivals_data = UserSurvival.objects.filter(firsttime__range=[date, date + timezone.timedelta(days=1)])
+	date_range_end = date + timezone.timedelta(days=1)
+	if '1' == interval_unit:
+		pass
+	elif '2' == interval_unit:
+		weekday = date.weekday()
+		date = date - timezone.timedelta(days=weekday)
+		date_range_end = date + timezone.timedelta(days=7)
+	elif '3' == interval_unit:
+		month_day = date.day()
+		date = date - timezone.timedelta(days=month_day)
+		date_range_end = date + monthdelta(1)
+
+	user_survivals_data = UserSurvival.objects.filter(firsttime__range=[date, date_range_end])
 	return user_survivals_data.order_by('lasttime').reverse()
 
 
@@ -117,12 +142,16 @@ def __analyze_survival():
 
 def lost_next_day(request):
 	request_date = __get_request_date(request)
-	user_survivals_data = __get_user_survivals_origin(request_date)
+	interval_unit = __get_request_interval_unit(request)
+	user_survivals_data = __get_user_survivals_origin(request_date, interval_unit)
 
+	logger.info("lost next day count %d", len(user_survivals_data))
 	users_lost = []
 	for user_survival in user_survivals_data:
 		if user_survival.survival_day() is False:
 			users_lost.append(user_survival.imei)
+
+	logger.info("user lost %d", len(user_survivals_data))
 
 	user_lost_cause_failure = {}
 	user_emails = {}
@@ -170,11 +199,12 @@ def lost_next_day(request):
 
 
 	return render(request, "statistic/lost.html", {'date': request_date,
+												   'unit': interval_unit,
 												   'lost': user_lost_cause_failure,
 												   'ratio': {'total': len(user_lost_cause_failure),
-															 'all_fail_count': all_fail_count,
+															 'all_fail': all_fail_count,
 															 'all_fail_qq_163': all_fail_qq_163,
-															 'all_success_count': all_success_count,
+															 'all_success': all_success_count,
 															 'all_success_and_single_mailbox_count': all_success_and_single_mailbox_count
 															 },
 												   'user_emails': user_emails

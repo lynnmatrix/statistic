@@ -16,7 +16,7 @@
 <form action="{% url 'survival_origin' %}" method="post">
 	{% csrf_token %}
 	<label for="date">首次活跃: </label>
-	<input type="date" value={{ date }} name="date" }>
+	<input type="date" value={{ date }} name="date" id="date" }>
 
 	<input type="submit" value="查看">
 </form>

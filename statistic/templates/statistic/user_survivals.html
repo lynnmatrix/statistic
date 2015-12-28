@@ -20,7 +20,8 @@
             $('#lost_user').click(function () {
 				var start_date_input = $('#date_survival');
 
-				 $('#lost_user_form > [name="date"]').val(start_date_input.val());
+				$('#lost_user_form > [name="date"]').val(start_date_input.val());
+				$('#lost_user_form > [name="interval_unit"]').val($('#interval_unit').val());
 
 				 $('#lost_user_form').submit;
             });
@@ -43,7 +44,14 @@
 					首次活跃:
 					<input type="date" value={{ date }} name="date" id="date_survival" }>
 				</label>
+				这天所在的
+				<select name="interval_unit" id="interval_unit">
+					<option value="1" {% if unit == "1" %} selected="selected" {%endif%}>天</option>
+					<option value="2" {% if unit == "2" %} selected="selected" {%endif%}>周</option>
+					<option value="3" {% if unit == "3" %} selected="selected" {%endif%}>月</option>
+				</select>
 			</div>
+
 
 			<button type="submit" class="btn btn-default" >查看留存率</button>
 		</form>
@@ -51,6 +59,7 @@
 		<form id="lost_user_form" action="{% url 'lost_next' %}" method="post" style="display:flex;flex-direction:column;">
 			{% csrf_token %}
 			<input type="date" name="date" hidden>
+			<input type="text" name="interval_unit" hidden>
 			<button id="lost_user" class="btn btn-default" style="margin-top:1em;" >查看次日流失用户的邮箱配置情况</button>
 		</form>
 	</section>
@@ -58,7 +67,7 @@
 
 </section>
 
-<table class="table table-striped">
+<table class="table">
 	<thead>
 	<tr>
 		<th>IMEI ({{ survival_count.0 }}, 100%)</th>
@@ -72,11 +81,11 @@
 	{% for user_survival in survivals %}
 	<tr>
 		<td >{{ user_survival.imei }}</td>
-		<td {%if user_survival.survival_day %} class="cell_survival" {%endif%}>{{ user_survival.survival_day }}</td>
-		<td {%if user_survival.survival_week %} class="cell_survival" {%endif%}>{{ user_survival.survival_week }}</td>
-		<td {%if user_survival.survival_month %} class="cell_survival" {%endif%}>{{ user_survival.survival_month }}</td>
-		<td {%if user_survival.survival_year %} class="cell_survival" {%endif%} >{{ user_survival.survival_year }}</td>
-		<td {%if user_survival.survival_last_week %} class="cell_survival" {%endif%}>{{ user_survival.survival_last_week }}</td>
+		<td {%if user_survival.survival_day %} class="success" {%endif%}>{{ user_survival.survival_day }}</td>
+		<td {%if user_survival.survival_week %} class="success" {%endif%}>{{ user_survival.survival_week }}</td>
+		<td {%if user_survival.survival_month %} class="success" {%endif%}>{{ user_survival.survival_month }}</td>
+		<td {%if user_survival.survival_year %} class="success" {%endif%} >{{ user_survival.survival_year }}</td>
+		<td {%if user_survival.survival_last_week %} class="success" {%endif%}>{{ user_survival.survival_last_week }}</td>
 	</tr>
 	{% endfor %}
 </table>
