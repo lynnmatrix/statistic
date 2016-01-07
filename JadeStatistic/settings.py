@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+	'django_jinja',
 	'statistic.apps.StatisticConfig',
 	'django.contrib.admin',
 	'django.contrib.auth',
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
 	'django.contrib.sessions',
 	'django.contrib.messages',
 	'django.contrib.staticfiles',
+
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -53,19 +55,43 @@ MIDDLEWARE_CLASSES = [
 ROOT_URLCONF = 'JadeStatistic.urls'
 
 TEMPLATES = [
-	{
-		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [],
-		'APP_DIRS': True,
-		'OPTIONS': {
-			'context_processors': [
-				'django.template.context_processors.debug',
-				'django.template.context_processors.request',
-				'django.contrib.auth.context_processors.auth',
-				'django.contrib.messages.context_processors.messages',
-			],
-		},
-	},
+   {
+        "BACKEND": "django_jinja.backend.Jinja2",
+        "APP_DIRS": True,
+        "OPTIONS": {
+            # Match the template names ending in .html but not the ones in the admin folder.
+            "match_extension": ".html",
+            "match_regex": r"^(?!admin/).*",
+            "app_dirname": "templates",
+
+            # Can be set to "jinja2.Undefined" or any other subclass.
+            "undefined": None,
+
+            "newstyle_gettext": True,
+
+            "extensions": [
+                "jinja2.ext.do",
+                "jinja2.ext.loopcontrols",
+                "jinja2.ext.with_",
+                "jinja2.ext.i18n",
+                "jinja2.ext.autoescape",
+                "django_jinja.builtins.extensions.CsrfExtension",
+                "django_jinja.builtins.extensions.CacheExtension",
+                "django_jinja.builtins.extensions.TimezoneExtension",
+                "django_jinja.builtins.extensions.UrlsExtension",
+                "django_jinja.builtins.extensions.StaticFilesExtension",
+                "django_jinja.builtins.extensions.DjangoFiltersExtension",
+            ],
+            "bytecode_cache": {
+                "name": "default",
+                "backend": "django_jinja.cache.BytecodeCache",
+                "enabled": False,
+            },
+            "autoescape": True,
+            "auto_reload": DEBUG,
+            "translation_engine": "django.utils.translation",
+        }
+    },
 ]
 
 WSGI_APPLICATION = 'JadeStatistic.wsgi.application'

@@ -66,8 +66,6 @@ def user_survivals(request):
 		if user_survival.survival_last_week():
 			survival_count[5] += 1
 
-	logger.info("%r", survival_count)
-
 	return render(request, 'statistic/user_survivals.html', {'survivals': user_survivals_data,
 															 'date': request_date.strftime('%Y-%m-%d'),
 															 'survival_count': survival_count,

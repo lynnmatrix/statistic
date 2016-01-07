@@ -4,34 +4,32 @@
 	<meta charset="UTF-8">
 	<title>次日流失用户情况</title>
 
-	{% load staticfiles %}
-	<link rel="stylesheet" type="text/css" href="{% static 'statistic/statistic.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{{ static('statistic/statistic.css') }}"/>
 	<link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
 
-	{% load filters %}
 </head>
 <body>
 <h1>次日流失用户情况</h1>
 <h3>首次使用时间:{{date}}</h3>
 <header>
 	<div>总流失: {{ratio.total}}</div>
-	<div>全失败: {{ratio.all_fail}}, {% widthratio ratio.all_fail ratio.total 100 %}%</div>
-	<div>全成功: {{ratio.all_success}}, {% widthratio ratio.all_success ratio.total 100 %}%</div>
-	<div>全失败中试过QQ/163/126: {{ratio.all_fail_qq_163}}, {% widthratio ratio.all_fail_qq_163 ratio.all_fail 100 %}%</div>
-	<div>全成功且只有一个邮箱: {{ratio.all_success_and_single_mailbox_count}}, {% widthratio ratio.all_success_and_single_mailbox_count ratio.all_success 100 %}%</div>
+	<div>全失败: {{ratio.all_fail}}, {{ ratio.all_fail /ratio.total* 100 }}%</div>
+	<div>全成功: {{ratio.all_success}}, {{ ratio.all_success/ ratio.total *100 }}%</div>
+	<div>全失败中试过QQ/163/126: {{ratio.all_fail_qq_163}}, {{ ratio.all_fail_qq_163 /ratio.all_fail *100 }}%</div>
+	<div>全成功且只有一个邮箱: {{ratio.all_success_and_single_mailbox_count}}, {{ ratio.all_success_and_single_mailbox_count/ ratio.all_success *100 }}%</div>
 </header>
 <table class="table">
 	<tr>
 		<th>IMEI (共{{ ratio.total }}人)</th>
-		<th>无成功添加的邮箱({{ ratio.all_fail }}, {% widthratio ratio.all_fail ratio.total 100 %}%)</th>
+		<th>无成功添加的邮箱({{ ratio.all_fail }}, {{ ratio.all_fail /ratio.total *100 }}%)</th>
 		<th>emails</th>
 	</tr>
-	{% for user, fail in lost.items %}
+	{% for user, fail in lost.items() %}
 	<tr>
 		<td >{{ user }}</a></td>
 		<td {%if fail %} class="warning" {%endif%}>{{ fail }}</td>
 		<td>
-			{{user_emails|get_dict:user}}
+			{{ user_emails[user] }}
 
 		</td>
 	</tr>

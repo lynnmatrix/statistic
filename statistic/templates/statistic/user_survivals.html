@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-{% load tz %}
-{% get_current_timezone as TIME_ZONE %}
-
-{% load staticfiles %}
 
 <html lang="zh">
 <head>
 	<meta charset="UTF-8">
 	<title>活跃用户分析</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'statistic/statistic.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{{ static('statistic/statistic.css') }}"/>
 	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
 
 	<script src="http://libs.baidu.com/bootstrap/3.0.3/js/bootstrap.js"></script>
@@ -36,9 +32,9 @@
 <section style="display:flex; flex-direction:row;margin:10px 10px;justify-content:space-between;">
 	<section>
 
-		<form id="date_form" action="{% url 'survival' %}" method="post" style="display:flex;flex-direction:column;">
-			{% csrf_token %}
-			<label>时区: {{ TIME_ZONE }}</label>
+		<form id="date_form" action="{{ url('survival') }}" method="post" style="display:flex;flex-direction:column;">
+			<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+			<label>时区: Asia/Shanghai</label>
 			<div class="form-group">
 				<label for="date_survival">
 					首次活跃:
@@ -56,7 +52,7 @@
 			<button type="submit" class="btn btn-default" >查看留存率</button>
 		</form>
 
-		<form id="lost_user_form" action="{% url 'lost_next' %}" method="post" style="display:flex;flex-direction:column;">
+		<form id="lost_user_form" action="{{ url('lost_next') }}" method="post" style="display:flex;flex-direction:column;">
 			{% csrf_token %}
 			<input type="date" name="date" hidden>
 			<input type="text" name="interval_unit" hidden>
@@ -71,21 +67,21 @@
 	<thead>
 	<tr>
 		<th>IMEI ({{ survival_count.0 }}, 100%)</th>
-		<th>1天后 ({{ survival_count.1 }}, {% widthratio survival_count.1 survival_count.0 100 %}%)</th>
-		<th>1周后 ({{ survival_count.2 }}, {% widthratio survival_count.2 survival_count.0 100 %}%)</th>
-		<th>1月后 ({{ survival_count.3 }}, {% widthratio survival_count.3 survival_count.0 100 %}%)</th>
-		<th>1年后 ({{ survival_count.4 }}, {% widthratio survival_count.4 survival_count.0 100 %}%)</th>
-		<th>最近一周 ({{ survival_count.5 }}, {% widthratio survival_count.5 survival_count.0 100 %}%)</th>
+		<th>1天后 ({{ survival_count.1 }}, {{ survival_count.1/survival_count.0 * 100 }}%)</th>
+		<th>1周后 ({{ survival_count.2 }}, {{ survival_count.2/survival_count.0 * 100 }}%)</th>
+		<th>1月后 ({{ survival_count.3 }}, {{ survival_count.3/survival_count.0 *100 }}%)</th>
+		<th>1年后 ({{ survival_count.4 }}, {{ survival_count.4/survival_count.0 * 100 }}%)</th>
+		<th>最近一周 ({{ survival_count.5 }}, {{ survival_count.5/survival_count.0 *100 }}%)</th>
 	</tr>
 	</thead>
 	{% for user_survival in survivals %}
 	<tr>
 		<td >{{ user_survival.imei }}</td>
-		<td {%if user_survival.survival_day %} class="success" {%endif%}>{{ user_survival.survival_day }}</td>
-		<td {%if user_survival.survival_week %} class="success" {%endif%}>{{ user_survival.survival_week }}</td>
-		<td {%if user_survival.survival_month %} class="success" {%endif%}>{{ user_survival.survival_month }}</td>
-		<td {%if user_survival.survival_year %} class="success" {%endif%} >{{ user_survival.survival_year }}</td>
-		<td {%if user_survival.survival_last_week %} class="success" {%endif%}>{{ user_survival.survival_last_week }}</td>
+		<td {%if user_survival.survival_day() %} class="success" {%endif%}>{{ user_survival.survival_day() }}</td>
+		<td {%if user_survival.survival_week() %} class="success" {%endif%}>{{ user_survival.survival_week() }}</td>
+		<td {%if user_survival.survival_month() %} class="success" {%endif%}>{{ user_survival.survival_month() }}</td>
+		<td {%if user_survival.survival_year() %} class="success" {%endif%} >{{ user_survival.survival_year() }}</td>
+		<td {%if user_survival.survival_last_week() %} class="success" {%endif%}>{{ user_survival.survival_last_week() }}</td>
 	</tr>
 	{% endfor %}
 </table>
