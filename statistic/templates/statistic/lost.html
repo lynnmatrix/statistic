@@ -5,36 +5,30 @@
 	<title>次日流失用户情况</title>
 
 	<link rel="stylesheet" type="text/css" href="{{ static('statistic/statistic.css') }}"/>
-	<link href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.css" rel="stylesheet">
+	<script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
+	<script src="//cdn.bootcss.com/react/0.14.4/react.js"></script>
+	<script src="https://cdn.bootcss.com/react/0.14.4/react-dom.js"></script>
+    <script src="{{ static('statistic/js/fixed-data-table.js')}}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ static('statistic/fixed-data-table.css') }}"/>
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
 
 </head>
 <body>
 <h1>次日流失用户情况</h1>
-<h3>首次使用时间:{{date}}</h3>
-<header>
-	<div>总流失: {{ratio.total}}</div>
-	<div>全失败: {{ratio.all_fail}}, {{ ratio.all_fail /ratio.total* 100 }}%</div>
-	<div>全成功: {{ratio.all_success}}, {{ ratio.all_success/ ratio.total *100 }}%</div>
-	<div>全失败中试过QQ/163/126: {{ratio.all_fail_qq_163}}, {{ ratio.all_fail_qq_163 /ratio.all_fail *100 }}%</div>
-	<div>全成功且只有一个邮箱: {{ratio.all_success_and_single_mailbox_count}}, {{ ratio.all_success_and_single_mailbox_count/ ratio.all_success *100 }}%</div>
+
+<header id="header">
+
 </header>
-<table class="table">
-	<tr>
-		<th>IMEI (共{{ ratio.total }}人)</th>
-		<th>无成功添加的邮箱({{ ratio.all_fail }}, {{ ratio.all_fail /ratio.total *100 }}%)</th>
-		<th>emails</th>
-	</tr>
-	{% for user, fail in lost.items() %}
-	<tr>
-		<td >{{ user }}</a></td>
-		<td {%if fail %} class="warning" {%endif%}>{{ fail }}</td>
-		<td>
-			{{ user_emails[user] }}
 
-		</td>
-	</tr>
-	{% endfor %}
-</table>
+<div class="page" id="content">
 
+</div>
+
+<script type="text/javascript">
+    var date = "{{ date }}";
+    var interval_unit = "{{ interval_unit }}";
+    var url = "{{ url('get_lost') }}";
+</script>
+<script type="text/javascript" src="{{ static('statistic/js/lost.js') }}"></script>
 </body>
 </html>

@@ -29,33 +29,33 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-	'django_jinja',
-	'statistic.apps.StatisticConfig',
-	'django.contrib.admin',
-	'django.contrib.auth',
-	'django.contrib.contenttypes',
-	'django.contrib.sessions',
-	'django.contrib.messages',
-	'django.contrib.staticfiles',
+    'django_jinja',
+    'statistic.apps.StatisticConfig',
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
 
 ]
 
 MIDDLEWARE_CLASSES = [
-	'django.middleware.security.SecurityMiddleware',
-	'django.contrib.sessions.middleware.SessionMiddleware',
-	'django.middleware.common.CommonMiddleware',
-	'django.middleware.csrf.CsrfViewMiddleware',
-	'django.contrib.auth.middleware.AuthenticationMiddleware',
-	'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-	'django.contrib.messages.middleware.MessageMiddleware',
-	'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'statistic.middleware.TimezoneMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'statistic.middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'JadeStatistic.urls'
 
 TEMPLATES = [
-   {
+    {
         "BACKEND": "django_jinja.backend.Jinja2",
         "APP_DIRS": True,
         "OPTIONS": {
@@ -92,6 +92,19 @@ TEMPLATES = [
             "translation_engine": "django.utils.translation",
         }
     },
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
 ]
 
 WSGI_APPLICATION = 'JadeStatistic.wsgi.application'
@@ -100,71 +113,69 @@ WSGI_APPLICATION = 'JadeStatistic.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-	'default': {
-		'NAME': 'AutoConfig',
-		'ENGINE': 'sql_server.pyodbc',
-		'USER': 'jadeconfig@ezzrlz8fib',
-		'PASSWORD': '18921311999Mail',
-		'OPTIONS': {
-			'dsn': 'MYDSN',
-		}
-	}
+    'default': {
+        'NAME': 'AutoConfig',
+        'ENGINE': 'sql_server.pyodbc',
+        'USER': 'jadeconfig@ezzrlz8fib',
+        'PASSWORD': '18921311999Mail',
+        'OPTIONS': {
+            'dsn': 'MYDSN',
+        }
+    }
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-	{
-		'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-	},
-	{
-		'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-	},
-	{
-		'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-	},
-	{
-		'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-	},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 # settings.py
 LOGGING = {
-	'version': 1,
-	'disable_existing_loggers': False,
-	'formatters': {
-		'verbose': {
-			'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-			'datefmt': "%d/%b/%Y %H:%M:%S"
-		},
-		'simple': {
-			'format': '%(levelname)s %(message)s'
-		},
-	},
-	'handlers': {
-		'file': {
-			'level': 'DEBUG',
-			'class': 'logging.FileHandler',
-			'filename': 'statistic.log',
-			'formatter': 'verbose'
-		},
-		'console': {
-			'class': 'logging.StreamHandler',
-			'formatter': 'verbose'
-		},
-	},
-	'loggers': {
-		'django': {
-			'handlers': ['file'],
-			'propagate': True,
-			'level': 'DEBUG',
-		},
-		'statistic': {
-			'handlers': ['console'],
-			'level': 'DEBUG',
-		},
-	}
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt': "%d/%b/%Y %H:%M:%S"
+        },
+
+    },
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'statistic.log',
+            'formatter': 'verbose'
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'statistic': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    }
 }
 
 # Internationalization
