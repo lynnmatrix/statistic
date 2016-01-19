@@ -33,7 +33,7 @@ LostTable = React.createFactory React.createClass({
           }
           ),
           (Column {
-            width: 200, header: (Cell {}, "成功添加的邮箱(#{@props.ratio.all_fail }, #{@props.ratio.all_fail / @props.ratio.total *100}%"), cell: ((props)->
+            width: 200, header: (Cell {}, "成功添加的邮箱(#{@props.ratio.all_fail }, #{@props.ratio.all_fail / @props.ratio.total *100}%)"), cell: ((props)->
               (Cell props, if data[props.rowIndex]['all_fail'] then '全失败' else '部分失败')
             )
           }
@@ -106,7 +106,14 @@ ConfigTable = React.createFactory React.createClass {
     )
 }
 
-$ ->
+get_next_day_lost = ->
+
+  date = $('#date_survival').val()
+  alert(date)
+  interval_unit = $('#interval_unit').val()
   $.getJSON url, {date: date, interval_unit:interval_unit}, (response) ->
     ReactDOM.render (LostPageHeader {ratio:response.ratio, date: date}), document.getElementById("header")
     ReactDOM.render (LostTable {lost:response.lost, emails:response.user_emails, ratio:response.ratio}), document.getElementById("content")
+
+exports = this
+exports.get_next_day_lost = get_next_day_lost

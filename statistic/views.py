@@ -27,10 +27,15 @@ def user_survivals_origin(request):
 
 
 def __get_request_date(request):
-    request_date_str = request.POST.get('date')
+    request_date_str = None
+    if request.POST:
+        request_date_str = request.POST.get('date')
+    else:
+        request_date_str = request.GET.get('date')
+
     request_date = None
     if request_date_str is not None:
-        time_array = timezone.datetime.strptime(request.POST.get('date'), '%Y-%m-%d').timetuple()
+        time_array = timezone.datetime.strptime(request_date_str, '%Y-%m-%d').timetuple()
         request_date = timezone.datetime(time_array[0], time_array[1], time_array[2], tzinfo=get_current_timezone())
     if request_date is None:
         request_date = timezone.now()
@@ -81,23 +86,9 @@ def __user_survivals_origin(request, date, interval_unit):
                   {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d'), 'unit': interval_unit})
 
 
-def lost_next_day(request):
+def get_lost(request):
     request_date = __get_request_date(request)
     interval_unit = __get_request_interval_unit(request)
-
-    lost_data = {
-        'date': request_date,
-        'interval_unit': interval_unit
-    }
-
-    return render(request, "statistic/lost.html", lost_data)
-
-
-def get_lost(request):
-    request_date = request.GET['date']
-    interval_unit = request.GET['interval_unit']
-    import dateutil.parser
-    request_date = dateutil.parser.parse(request_date)
 
     user_survivals_data = controller.get_user_survivals_origin(request_date, interval_unit)
 
