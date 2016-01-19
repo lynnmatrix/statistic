@@ -1,5 +1,6 @@
 import logging
 
+import simplejson as simplejson
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -85,8 +86,8 @@ def lost_next_day(request):
     interval_unit = __get_request_interval_unit(request)
 
     lost_data = {
-      'date': request_date,
-      'interval_unit': interval_unit
+        'date': request_date,
+        'interval_unit': interval_unit
     }
 
     return render(request, "statistic/lost.html", lost_data)
@@ -106,7 +107,23 @@ def get_lost(request):
     return JsonResponse(lost_data)
 
 
-def config_detail(request, imei):
-    config_logs = Userconfiglog.objects.filter(imei=imei)
+def config_detail(request):
+    imei = request.GET['imei']
+    config_logs = Userconfiglog.objects.filter(imei=imei).select_related('incomingconfig', 'outgoingconfig')
+    configs = []
+    for config in config_logs:
+        configs.append({'issuccess': config.issuccess,
+                        'errormessage': config.errormessage,
+                        'auto': config.isautoconfig,
+                        'imei': config.imei,
+                        'email': config.email,
+                        'protocol': config.protocol,
+                        'loginname': config.loginname,
+                        'incomingconfig': {'address': config.incomingconfig.address,
+                                           'port': config.incomingconfig.port,
+                                           'security': config.incomingconfig.security},
+                        'outgoingconfig': {'address': config.outgoingconfig.address,
+                                           'port': config.outgoingconfig.port,
+                                           'security': config.outgoingconfig.security}})
 
-    return render(request, "statistic/config.html", config_logs)
+    return JsonResponse({'configs': configs})

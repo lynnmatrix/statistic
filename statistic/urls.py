@@ -9,5 +9,5 @@ urlpatterns = [
     url(r'^lost/', views.lost_next_day, name='lost_next'),
     url(r'^get_lost/$', views.get_lost, name="get_lost"),
     # url(r'^all_fail_user'),
-    # url(r'^config/(?P<imei>\w+)', views.config_detail, name="config_detail"),
+    url(r'^config/$', views.config_detail, name="config"),
 ]
