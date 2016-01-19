@@ -9,9 +9,9 @@ from __future__ import unicode_literals
 
 from datetime import timedelta
 
-import monthdelta
 from django.db import models
 from django.utils import timezone
+from monthdelta import MonthDelta
 
 
 class Activedevicelog(models.Model):
@@ -387,10 +387,10 @@ class UserSurvival(models.Model):
         return self.__survival(timedelta(weeks=1))
 
     def survival_month(self):
-        return self.__survival(monthdelta.monthdelta(1))
+        return self.__survival(MonthDelta(months=1))
 
     def survival_year(self):
-        return self.__survival(monthdelta.monthdelta(12))
+        return self.__survival(MonthDelta(months=12))
 
     def survival_last_week(self):
         from django.utils import timezone

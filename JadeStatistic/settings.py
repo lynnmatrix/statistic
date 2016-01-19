@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'debug_toolbar',
+    # 'debug_panel'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -50,6 +51,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'statistic.middleware.TimezoneMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_panel.middleware.DebugPanelMiddleware',
 ]
 
 ROOT_URLCONF = 'JadeStatistic.urls'
@@ -61,7 +64,7 @@ TEMPLATES = [
         "OPTIONS": {
             # Match the template names ending in .html but not the ones in the admin folder.
             "match_extension": ".html",
-            "match_regex": r"^(?!admin/).*",
+            "match_regex": r"^statistic/.*",
             "app_dirname": "templates",
 
             # Can be set to "jinja2.Undefined" or any other subclass.
@@ -195,3 +198,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+
+DEBUG_TOOLBAR_PATCH_SETTINGS = True
+DEBUG_TOOLBAR_CONFIG = {
+    'JQUERY_URL': '//cdn.bootcss.com/jquery/2.1.4/jquery.js'
+}

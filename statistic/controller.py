@@ -1,8 +1,8 @@
 from sets import Set
 
+import monthdelta as monthdelta
 from django.utils import timezone
 from django.utils.timezone import get_current_timezone
-from monthdelta import monthdelta
 import logging
 
 from statistic.models import UserSurvival, AnalyzeRecord, Activedevicelog, Deviceemaillog, Userconfiglog

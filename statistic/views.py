@@ -100,7 +100,9 @@ def get_lost(request):
     request_date = dateutil.parser.parse(request_date)
 
     user_survivals_data = controller.get_user_survivals_origin(request_date, interval_unit)
+
     lost_data = controller.analyze_lost(user_survivals_data)
+
     lost_data['date'] = request_date
     lost_data['interval_unit'] = interval_unit
 
