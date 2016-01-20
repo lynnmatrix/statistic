@@ -70,7 +70,7 @@ def analyze_survival():
 
 
 def analyze_lost(user_survivals_data):
-    logger.info("lost next day count %d", len(user_survivals_data))
+    # logger.info("lost next day count %d", len(user_survivals_data))
     users_lost = []
     for user_survival in user_survivals_data:
         if user_survival.survival_day() is False:
@@ -80,26 +80,26 @@ def analyze_lost(user_survivals_data):
 
     user_lost_cause_failure = {}
     user_emails = {}
-    all_fail_count = 0
+    all_fail_count = len(users_lost)
+
     for user_lost in users_lost:
-        fail = Deviceemaillog.objects.filter(imei=user_lost).count() <= 0
-        if fail:
-            all_fail_count += 1
-            user_lost_cause_failure[user_lost] = True
-        else:
-            user_lost_cause_failure[user_lost] = False
+        user_lost_cause_failure[user_lost] = True
         user_emails[user_lost] = {'success': [], 'fail': []}
 
     config_logs = Userconfiglog.objects.filter(imei__in=users_lost)
 
     for config_log in config_logs:
+
         if config_log.issuccess:
             user_emails[config_log.imei]['success'].append(config_log.email)
+            if user_lost_cause_failure[config_log.imei]:
+                user_lost_cause_failure[config_log.imei] = False
+                all_fail_count -= 1
         else:
             user_emails[config_log.imei]['fail'].append(config_log.email)
 
     logger.info("%s", user_emails)
-    logger.info("%s", user_lost_cause_failure)
+    # logger.info("%s", user_lost_cause_failure)
 
     all_fail_qq_163 = 0
     all_success_count = 0
@@ -134,5 +134,5 @@ def analyze_lost(user_survivals_data):
                   },
         'user_emails': user_emails
     }
-    logger.info("result %s", result)
+    # logger.info("result %s", result)
     return result

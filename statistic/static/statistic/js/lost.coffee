@@ -3,8 +3,10 @@
 Table = React.createFactory FixedDataTable.Table
 Column = React.createFactory FixedDataTable.Column
 Cell = React.createFactory FixedDataTable.Cell
+_Loading = React.createFactory Loading
 
 LostPageHeader = React.createFactory React.createClass
+  displayName: 'LostPageHeader'
   render: ->
     (div {}, [
       (h3 {}, "首次使用时间:#{@props.date}"),
@@ -15,30 +17,33 @@ LostPageHeader = React.createFactory React.createClass
       (div {}, "全成功且只有一个邮箱: #{@props.ratio['all_success_and_single_mailbox_count']}, #{(@props.ratio['all_success_and_single_mailbox_count'] / @props.ratio['all_success'] * 100 )}%")
     ])
 
-LostTable = React.createFactory React.createClass({
+_LostTable = React.createFactory React.createClass({
+    displayName: 'LostTable'
     render: ->
+
       data =  []
       for user, all_fail of @props.lost
         data.push {user, 'all_fail': all_fail, 'emails': @props.emails[user]}
-
-      (Table {rowHeight: 50,headerHeight: 50,rowsCount: data.length,width: 1000, height: 500},
+      tableHeight = (data.length + 1) * 50
+      (Table {rowHeight: 50,headerHeight: 50,rowsCount: data.length, width: @props.tableWidth, height: tableHeight},
         [
           (Column {
-            width: 150, header: (Cell {}, "IMEI (共#{@props.ratio.total}人)"), cell: ((props)->
-              (Cell props, (div {onClick: ->
+            width: 150, header: (Cell {}, "IMEI (共#{@props.ratio['total']}人)"), cell: ((props)->
+              (Cell props, (div {href:'#',onClick: ->
+                ReactDOM.render (_Loading {type:'bars', color:'#e3e3e3'}), document.getElementById("config")
                 $.getJSON config_url, {imei: data[props.rowIndex]['user']}, (response) ->
-                    ReactDOM.render (ConfigTable {configs: response.configs}), document.getElementById("config")
+                    ReactDOM.render (div {'padding-left':'120px'}, [(h3 {}, "配置log"),(ConfigTable {configs: response.configs})]), document.getElementById("config")
               }, data[props.rowIndex]['user']))
             )
           }
           ),
           (Column {
-            width: 200, header: (Cell {}, "成功添加的邮箱(#{@props.ratio.all_fail }, #{@props.ratio.all_fail / @props.ratio.total *100}%)"), cell: ((props)->
-              (Cell props, if data[props.rowIndex]['all_fail'] then '全失败' else '部分失败')
+            width: 200, header: (Cell {}, "全失败(#{@props.ratio.all_fail }, #{@props.ratio.all_fail / @props.ratio.total *100}%)"), cell: ((props)->
+              (Cell props, if data[props.rowIndex]['all_fail'] then '全失败' else '有成功')
             )
           }
           ),
-          (Column {width: 650, header: (Cell {}, 'emails'), cell: ((props)->
+          (Column {width: 650, flexGrow: 1, header: (Cell {}, 'emails'), cell: ((props)->
               (Cell props, (JSON.stringify data[props.rowIndex]['emails']))
             )}),
         ]
@@ -46,19 +51,22 @@ LostTable = React.createFactory React.createClass({
 
   })
 
-ConfigTable = React.createFactory React.createClass {
+
+_ConfigTable = React.createFactory React.createClass {
+  displayName: 'ConfigTable'
   render: ->
+    tableHeight = (@props.configs.length + 1) * 50
     configs = @props.configs
-    (Table {rowHeight: 50, headerHeight: 50, rowsCount: @props.configs.length, width: 1500, height: 500},
+    (Table {rowHeight: 50, headerHeight: 50, rowsCount: @props.configs.length, width: @props.tableWidth, height: tableHeight},
       [
         (Column {
-          width: 50, header: (Cell {}, "success"), cell: ((props)->
+          width: 100, header: (Cell {}, "success"), cell: ((props)->
             (Cell props, if configs[props.rowIndex]['issuccess']==0 then 'False'else 'True')
           )
         }
         ),
         (Column {
-          width: 50, header: (Cell {}, "autoconfig"), cell: ((props)->
+          width: 100, header: (Cell {}, "autoconfig"), cell: ((props)->
             (Cell props, if configs[props.rowIndex]['isautoconfig']==0 then 'False'else 'True')
           )
         }
@@ -76,7 +84,7 @@ ConfigTable = React.createFactory React.createClass {
         }
         ),
         (Column {
-          width: 50, header: (Cell {}, "protocol"), cell: ((props)->
+          width: 100, header: (Cell {}, "protocol"), cell: ((props)->
             (Cell props, if configs[props.rowIndex]['protocol']==1 then 'EAS' else ( if configs[props.rowIndex]['protocol']==2 then "IMAP" else "POP") )
           )
         }
@@ -97,7 +105,7 @@ ConfigTable = React.createFactory React.createClass {
           )
         }),
         (Column {
-          width: 200, header: (Cell {}, "errormessage"), cell: ((props)->
+          width: 200, flexGrow:1, header: (Cell {}, "errormessage"), cell: ((props)->
             (Cell props, configs[props.rowIndex]['errormessage'])
           )
         }
@@ -106,14 +114,43 @@ ConfigTable = React.createFactory React.createClass {
     )
 }
 
+AutoSizableTable = (Component) ->
+  React.createFactory React.createClass {
+    displayName: 'AutoSizableTable'
+    getInitialState: ->
+      {tableWidth: 1000}
+
+    componentDidMount: ->
+      this._update();
+      e = window;
+      e.addEventListener("resize", this._onResize, !1)
+
+    _onResize: ->
+      clearTimeout(this._updateTimer)
+      this._updateTimer = setTimeout(this._update, 16)
+
+    _update: ->
+      e = window
+      a = if e.innerWidth < 680 then 0 else 240
+      this.setState {tableWidth: e.innerWidth - a}
+
+    render: ->
+      (Component $.extend({}, @props, @state))
+  }
+
+LostTable = AutoSizableTable _LostTable
+ConfigTable = AutoSizableTable _ConfigTable
+
 get_next_day_lost = ->
 
+  ReactDOM.render (_Loading {type:'bars', color:'#e3e3e3'}), document.getElementById("content")
+
   date = $('#date_survival').val()
-  alert(date)
   interval_unit = $('#interval_unit').val()
   $.getJSON url, {date: date, interval_unit:interval_unit}, (response) ->
     ReactDOM.render (LostPageHeader {ratio:response.ratio, date: date}), document.getElementById("header")
     ReactDOM.render (LostTable {lost:response.lost, emails:response.user_emails, ratio:response.ratio}), document.getElementById("content")
+
 
 exports = this
 exports.get_next_day_lost = get_next_day_lost
