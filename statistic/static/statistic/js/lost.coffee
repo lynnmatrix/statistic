@@ -32,7 +32,7 @@ _LostTable = React.createFactory React.createClass({
               (Cell props, (div {href:'#',onClick: ->
                 ReactDOM.render (_Loading {type:'bars', color:'#e3e3e3'}), document.getElementById("config")
                 $.getJSON config_url, {imei: data[props.rowIndex]['user']}, (response) ->
-                    ReactDOM.render (div {'padding-left':'120px'}, [(h3 {}, "配置log"),(ConfigTable {configs: response.configs})]), document.getElementById("config")
+                    ReactDOM.render (div {style:'padding-left:120px'}, [(h3 {}, "配置log"),(ConfigTable {configs: response.configs})]), document.getElementById("config")
               }, data[props.rowIndex]['user']))
             )
           }

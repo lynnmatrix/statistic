@@ -56,7 +56,7 @@
                   imei: data[props.rowIndex]['user']
                 }, function(response) {
                   return ReactDOM.render(div({
-                    'padding-left': '120px'
+                    style: 'padding-left:120px'
                   }, [
                     h3({}, "配置log"), ConfigTable({
                       configs: response.configs
