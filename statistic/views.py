@@ -1,6 +1,7 @@
 import logging
 
 import simplejson as simplejson
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 
@@ -14,11 +15,12 @@ from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival, Devic
 
 logger = logging.getLogger(__name__)
 
-
+@login_required
 def index(request):
     return user_survivals(request)
 
 
+@login_required
 def user_survivals_origin(request):
     request_date = __get_request_date(request)
     interval_unit = __get_request_interval_unit(request)
@@ -49,6 +51,7 @@ def __get_request_interval_unit(request):
     return request.POST.get('interval_unit', 1)
 
 
+@login_required
 def user_survivals(request):
     request_date = __get_request_date(request)
     interval_unit = __get_request_interval_unit(request)
@@ -85,7 +88,7 @@ def __user_survivals_origin(request, date, interval_unit):
     return render(request, 'statistic/user_survivals_origin.html',
                   {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d'), 'unit': interval_unit})
 
-
+@login_required
 def get_lost(request):
     request_date = __get_request_date(request)
     interval_unit = __get_request_interval_unit(request)
@@ -99,7 +102,7 @@ def get_lost(request):
 
     return JsonResponse(lost_data)
 
-
+@login_required
 def config_detail(request):
     imei = request.GET['imei']
     config_logs = Userconfiglog.objects.filter(imei=imei).select_related('incomingconfig', 'outgoingconfig')
