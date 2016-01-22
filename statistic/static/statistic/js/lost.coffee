@@ -1,3 +1,10 @@
+React = require 'react'
+ReactDOM = require 'react-dom'
+FixedDataTable = require 'fixed-data-table'
+Loading = require 'react-loading'
+
+require 'fixed-data-table/dist/fixed-data-table.css'
+
 {a, h3, div} = React.DOM
 
 Table = React.createFactory FixedDataTable.Table
@@ -32,7 +39,7 @@ _LostTable = React.createFactory React.createClass({
               (Cell props, (div {href:'#',onClick: ->
                 ReactDOM.render (_Loading {type:'bars', color:'#e3e3e3'}), document.getElementById("config")
                 $.getJSON config_url, {imei: data[props.rowIndex]['user']}, (response) ->
-                    ReactDOM.render (div {style:'padding-left:120px'}, [(h3 {}, "配置log"),(ConfigTable {configs: response.configs})]), document.getElementById("config")
+                    ReactDOM.render (div {}, [(h3 {}, "配置log"),(ConfigTable {configs: response.configs})]), document.getElementById("config")
               }, data[props.rowIndex]['user']))
             )
           }
@@ -151,6 +158,4 @@ get_next_day_lost = ->
     ReactDOM.render (LostPageHeader {ratio:response.ratio, date: date}), document.getElementById("header")
     ReactDOM.render (LostTable {lost:response.lost, emails:response.user_emails, ratio:response.ratio}), document.getElementById("content")
 
-
-exports = this
-exports.get_next_day_lost = get_next_day_lost
+window.get_next_day_lost = get_next_day_lost

@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 
-<section lang="zh">
+<html lang="zh">
 <head>
 	<meta charset="UTF-8">
 	<title>活跃用户分析</title>
-	<link rel="stylesheet" type="text/css" href="{{ static('statistic/statistic.css') }}"/>
+	<link rel="stylesheet" type="text/css" href="{{ static('statistic/css/statistic.css') }}"/>
 	<script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.js"></script>
 
 	<script src="https://cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.js"></script>
 	<link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
-
-	<script src="//cdn.bootcss.com/react/0.14.4/react.js"></script>
-	<script src="https://cdn.bootcss.com/react/0.14.4/react-dom.js"></script>
-    <script src="{{ static('statistic/js/fixed-data-table.js')}}"></script>
-    <script src="{{ static('statistic/js/react-loading.js')}}"></script>
-    <link rel="stylesheet" type="text/css" href="{{ static('statistic/fixed-data-table.css') }}"/>
 
     <script type="text/javascript">
         var url = "{{ url('get_lost') }}";
@@ -24,6 +18,7 @@
 
 </head>
 
+<body>
 <h1>用户流失分析</h1>
 
 <section style="margin:10px 10px;">
