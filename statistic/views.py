@@ -3,7 +3,7 @@ import logging
 import simplejson as simplejson
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 
 # Create your views here.
 from django.utils import timezone
@@ -15,9 +15,10 @@ from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival, Devic
 
 logger = logging.getLogger(__name__)
 
+
 @login_required
 def index(request):
-    return user_survivals(request)
+    return render_to_response('statistic/index.html')
 
 
 @login_required

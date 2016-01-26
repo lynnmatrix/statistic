@@ -42,5 +42,5 @@ gulp.task 'default', ->
 gulp.task 'build', ['webpack:build-dev']
 
 gulp.task 'watch', ->
-  gulp.watch './statistic/static/js/*.coffee', ['build']
-  gulp.watch './statistic/static/css/*.css', ['build']
+  gulp.watch './statistic/static/statistic/js/*.coffee', ['build']
+  gulp.watch './statistic/static/statistic/css/*.css', ['build']
