@@ -2,6 +2,7 @@ React = require 'react'
 ReactDOM = require 'react-dom'
 FixedDataTable = require 'fixed-data-table'
 Loading = require 'react-loading'
+Bootstrap = require 'react-bootstrap'
 
 require 'fixed-data-table/dist/fixed-data-table.css'
 
@@ -17,13 +18,12 @@ _Loading = React.createFactory Loading
 LostPageHeader = React.createFactory React.createClass
   displayName: 'LostPageHeader'
   render: ->
-    (div {}, [
-      (h3 {}, "首次使用时间:#{@props.date}"),
+    (div {style:{display: 'flex', flexDirection:'row', justifyContent:'space-between'}}, [
       (div {}, "总流失: #{@props.ratio['total']}"),
-      (div {}, "全失败: #{@props.ratio["all_fail"]}, #{(@props.ratio['all_fail'] / @props.ratio['total'] * 100)}%"),
-      (div {}, "全成功: #{@props.ratio['all_success']}, #{(@props.ratio['all_success'] / @props.ratio['total'] *100)}%"),
-      (div {}, "全失败中试过QQ/163/126: #{@props.ratio['all_fail_qq_163']}, #{(@props.ratio['all_fail_qq_163'] / @props.ratio['all_fail'] * 100)}%"),
-      (div {}, "全成功且只有一个邮箱: #{@props.ratio['all_success_and_single_mailbox_count']}, #{(@props.ratio['all_success_and_single_mailbox_count'] / @props.ratio['all_success'] * 100 )}%")
+      (div {}, "全失败: #{@props.ratio["all_fail"]}, #{(@props.ratio['all_fail'] / @props.ratio['total'] * 100).toFixed(2)}%"),
+      (div {}, "全成功: #{@props.ratio['all_success']}, #{(@props.ratio['all_success'] / @props.ratio['total'] *100).toFixed(2)}%"),
+      (div {}, "全失败中试过QQ/163/126: #{@props.ratio['all_fail_qq_163']}, #{(@props.ratio['all_fail_qq_163'] / @props.ratio['all_fail'] * 100).toFixed(2)}%"),
+      (div {}, "全成功且只有一个邮箱: #{@props.ratio['all_success_and_single_mailbox_count']}, #{(@props.ratio['all_success_and_single_mailbox_count'] / @props.ratio['all_success'] * 100 ).toFixed(2)}%")
     ])
 
 _LostTable = React.createFactory React.createClass({
@@ -47,7 +47,7 @@ _LostTable = React.createFactory React.createClass({
           }
           ),
           (Column {
-            width: 200, header: (Cell {}, "全失败(#{@props.ratio.all_fail }, #{@props.ratio.all_fail / @props.ratio.total *100}%)"), cell: ((props)->
+            width: 200, header: (Cell {}, "全失败(#{@props.ratio.all_fail }, #{(@props.ratio.all_fail / @props.ratio.total *100).toFixed(2)}%)"), cell: ((props)->
               (Cell props, if data[props.rowIndex]['all_fail'] then '全失败' else '有成功')
             )
           }

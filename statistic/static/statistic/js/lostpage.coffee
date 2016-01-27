@@ -9,6 +9,10 @@ Column = React.createFactory FixedDataTable.Column
 Cell = React.createFactory FixedDataTable.Cell
 _Loading = React.createFactory Loading
 
+{ButtonGroup, Button} = require 'react-bootstrap'
+ButtonGroup = React.createFactory ButtonGroup
+Button = React.createFactory Button
+
 {LostPageHeader, LostTable}= require('./lost.coffee')
 
 $ = require 'jquery'
@@ -35,22 +39,40 @@ LostForm = React.createClass {
   displayName: 'LostForm',
   getInitialState: ->
     {
-      date: '',
+      date: new Date().toISOString().substring(0, 10)
       interval_unit: '1'
     }
 
   render: ->
-#    (div {}, 'hello lost')
-    (div {style:{display: 'flex', flexDirection: 'column'}}, [
-      (label {}, '时区: Asia/Shanghai'),
-      (label {htmlFor:'date_survival'},['首次使用时间', (input {type:'date', value:@state.date, name:'date', id:'date_survival', onChange: @handleDateChange})]),
-      (div {}, '所在的'),
-      (select {name:'interval_unit', id:'interval_unit', value: @state.interval_unit, onChange: @handleUnitChange}, [
-        (option {value:'1'}, '天'),
-        (option {value:'2'}, '周'),
-        (option {value:'3'}, '月'),
-        ]),
-      (button {className:'btn btn-default', onClick: @props.onQueryLostRate}, '查看留存率')
+    rowStyle = {display: 'flex', flexDirection:'row', justifyContent: 'space-between'}
+    (div {}, [
+      (div {style: rowStyle}, [
+        (label {}, '时区: Asia/Shanghai'),
+        (label {htmlFor: 'date_survival'}, ['首次使用时间: ', (input {
+          type: 'date',
+          value: @state.date,
+          name: 'date',
+          id: 'date_survival',
+          onChange: @handleDateChange
+        })])]),
+      (div {style: rowStyle}, [
+        (ButtonGroup {bsSize:'small'}, [
+          (Button {onClick: @props.onQueryLostRate}, '留存率'),
+          (Button {onClick: @props.onQueryLostRate}, '流失用户'),
+        ])
+
+        (label {htmlFor: 'interval_unit'}, ['所在的',
+          (select {
+            name: 'interval_unit',
+            id: 'interval_unit',
+            value: @state.interval_unit,
+            onChange: @handleUnitChange
+          }, [
+            (option {value: '1'}, '天'),
+            (option {value: '2'}, '周'),
+            (option {value: '3'}, '月'),
+          ])])
+      ])
     ])
 
   handleDateChange: (e)->
@@ -99,7 +121,7 @@ LostRate = React.createFactory React.createClass {
 
 LostPage = React.createClass {
   render: ->
-    (div {id:'lost_page'}, [
+    (div {id:'lost_page', style:{margin:'15px 15px'}}, [
       (LostFormF {onQueryLostRate:@queryLost, user_survivals:{}}),
       (div {id:'lost_rate'})
     ])
