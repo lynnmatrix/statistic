@@ -5,6 +5,8 @@ Loading = require 'react-loading'
 
 require 'fixed-data-table/dist/fixed-data-table.css'
 
+$ =require 'jquery'
+
 {a, h3, div} = React.DOM
 
 Table = React.createFactory FixedDataTable.Table
@@ -32,13 +34,13 @@ _LostTable = React.createFactory React.createClass({
       for user, all_fail of @props.lost
         data.push {user, 'all_fail': all_fail, 'emails': @props.emails[user]}
       tableHeight = (data.length + 1) * 50
-      (Table {rowHeight: 50,headerHeight: 50,rowsCount: data.length, width: @props.tableWidth, height: tableHeight},
+      (div {}, [(Table {rowHeight: 50,headerHeight: 50,rowsCount: data.length, width: @props.tableWidth, height: tableHeight},
         [
           (Column {
             width: 150, header: (Cell {}, "IMEI (共#{@props.ratio['total']}人)"), cell: ((props)->
               (Cell props, (div {href:'#',onClick: ->
-                ReactDOM.render (_Loading {type:'bars', color:'#e3e3e3'}), document.getElementById("config")
-                $.getJSON config_url, {imei: data[props.rowIndex]['user']}, (response) ->
+                ReactDOM.render (_Loading {type:'bars', color:'#0090e0'}), document.getElementById("config")
+                $.getJSON url_config, {imei: data[props.rowIndex]['user']}, (response) ->
                     ReactDOM.render (div {}, [(h3 {}, "配置log"),(ConfigTable {configs: response.configs})]), document.getElementById("config")
               }, data[props.rowIndex]['user']))
             )
@@ -54,7 +56,7 @@ _LostTable = React.createFactory React.createClass({
               (Cell props, (JSON.stringify data[props.rowIndex]['emails']))
             )}),
         ]
-      )
+      ), (div {id:'config'})])
 
   })
 
@@ -142,6 +144,7 @@ AutoSizableTable = (Component) ->
       this.setState {tableWidth: e.innerWidth - a}
 
     render: ->
+      $ = require 'jquery'
       (Component $.extend({}, @props, @state))
   }
 
@@ -155,7 +158,10 @@ get_next_day_lost = ->
   date = $('#date_survival').val()
   interval_unit = $('#interval_unit').val()
   $.getJSON url, {date: date, interval_unit:interval_unit}, (response) ->
-    ReactDOM.render (LostPageHeader {ratio:response.ratio, date: date}), document.getElementById("header")
+    ReactDOM.render (LostPageHeaderF {ratio:response.ratio, date: date}), document.getElementById("header")
     ReactDOM.render (LostTable {lost:response.lost, emails:response.user_emails, ratio:response.ratio}), document.getElementById("content")
 
 window.get_next_day_lost = get_next_day_lost
+module.exports.LostPageHeader = LostPageHeader
+module.exports.LostTable = LostTable
+module.exports.ConfigTable = ConfigTable

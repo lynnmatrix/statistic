@@ -22,16 +22,13 @@ gulp.task "webpack-dev-server", (callback) ->
 
   # Start a webpack-dev-server.
   devServer = new WebpackDevServer(webpack(webpackConfig),
-    contentBase: './statistic/static'
     hot: true
     watchOptions:
         aggregateTimeout: 100
         poll: 300
-    noInfo: true
   )
   devServer.listen 8080, "0.0.0.0", (err) ->
     throw new gutil.PluginError("webpack-dev-server", err) if err
-    gutil.log "[webpack-dev-server]", "http://localhost:8080"
     callback()
 
   return
@@ -43,4 +40,5 @@ gulp.task 'build', ['webpack:build-dev']
 
 gulp.task 'watch', ->
   gulp.watch './statistic/static/statistic/js/*.coffee', ['build']
+  gulp.watch './statistic/static/statistic/js/lostpage.coffee', ['build']
   gulp.watch './statistic/static/statistic/css/*.css', ['build']

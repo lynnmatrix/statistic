@@ -76,7 +76,7 @@ def analyze_lost(user_survivals_data):
         if user_survival.survival_day() is False:
             users_lost.append(user_survival.imei)
 
-    logger.info("user lost %d", len(users_lost))
+    # logger.info("user lost %d", len(users_lost))
 
     user_lost_cause_failure = {}
     user_emails = {}
@@ -98,7 +98,7 @@ def analyze_lost(user_survivals_data):
         else:
             user_emails[config_log.imei]['fail'].append(config_log.email)
 
-    logger.info("%s", user_emails)
+    # logger.info("%s", user_emails)
     # logger.info("%s", user_lost_cause_failure)
 
     all_fail_qq_163 = 0

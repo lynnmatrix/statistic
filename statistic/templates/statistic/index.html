@@ -3,8 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>极邮统计</title>
+    <link rel="icon" href="{{ static('statistic/img/favicon.ico') }}">
+
+    <script type="text/javascript">
+        var url_get_lost = "{{ url('get_lost') }}";
+        var url_config = "{{ url('config') }}"
+    </script>
+
+
     <script type="text/javascript" src="{{ static('statistic/js/bundle.js') }}"></script>
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
+
+
 </head>
 <body>
 <div id="container"></div>

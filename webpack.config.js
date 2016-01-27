@@ -14,7 +14,6 @@ module.exports = {
     output: {
         path: path.join(__dirname, "statistic/static/statistic/js"),
         filename: 'bundle.js'
-
     },
     resolveLoader: {
         modulesDirectories: ['node_modules']

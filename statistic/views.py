@@ -49,7 +49,12 @@ def __get_request_interval_unit(request):
     '''
     :return: 1 day, 2 week, 3 month
     '''
-    return request.POST.get('interval_unit', 1)
+    unit = 1
+    if request.POST:
+        unit = request.POST.get('interval_unit', 1)
+    else:
+        unit = request.GET.get('interval_unit', 1)
+    return unit
 
 
 @login_required
@@ -89,6 +94,7 @@ def __user_survivals_origin(request, date, interval_unit):
     return render(request, 'statistic/user_survivals_origin.html',
                   {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d'), 'unit': interval_unit})
 
+
 @login_required
 def get_lost(request):
     request_date = __get_request_date(request)
@@ -102,6 +108,7 @@ def get_lost(request):
     lost_data['interval_unit'] = interval_unit
 
     return JsonResponse(lost_data)
+
 
 @login_required
 def config_detail(request):

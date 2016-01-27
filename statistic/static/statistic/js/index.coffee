@@ -31,9 +31,11 @@ App = React.createClass {
 }
 AppF = React.createFactory App
 
+LostPage = React.createFactory (require './lostpage')
+
 Lost =  React.createClass {
   render: ->
-    (div {}, 'lost')
+    (LostPage {url_get_lost})
 }
 LostF = React.createFactory Lost
 
@@ -49,6 +51,7 @@ Feedback = React.createClass {
 }
 FeedbackF = React.createFactory Feedback
 
+
 routes = {
   path:'/',
   component: App,
@@ -58,7 +61,8 @@ routes = {
     {path:'help', component: Feedback},
   ]
 }
+history = ReactRouter.History.createHistory
 
 $(->
-  ReactDOM.render (Router {routes:routes}), document.getElementById('container')
+  ReactDOM.render (Router {history , routes}), document.getElementById('container')
 )
