@@ -4,6 +4,8 @@ $ = require 'jquery'
 RB = require 'react-bootstrap'
 ReactRouter = require 'react-router'
 
+require 'fixed-data-table/dist/fixed-data-table.css'
+
 {div} = React.DOM
 
 Router = React.createFactory ReactRouter.Router

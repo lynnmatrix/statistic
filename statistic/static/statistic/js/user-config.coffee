@@ -2,9 +2,7 @@ React = require 'react'
 ReactDOM = require 'react-dom'
 FixedDataTable = require 'fixed-data-table'
 Loading = require 'react-loading'
-AutoSizableTable = require './autosizabletable.coffee'
-
-require 'fixed-data-table/dist/fixed-data-table.css'
+AutoSizableTable = require './auto-sizable-table.coffee'
 
 $ =require 'jquery'
 
@@ -15,8 +13,17 @@ Column = React.createFactory FixedDataTable.Column
 Cell = React.createFactory FixedDataTable.Cell
 _Loading = React.createFactory Loading
 
-LostPageHeader = React.createFactory React.createClass
-  displayName: 'LostPageHeader'
+
+LostUserConfigs = React.createFactory React.createClass {
+  displayName: 'LostUserConfigs',
+  render: ->
+    (div {}, [(LostUserConfigsHeader {ratio: @props.ratio}),
+      (LostUserConfigsTable {lost: @props.lost, emails: @props.emails, ratio: @props.ratio})
+    ])
+}
+
+LostUserConfigsHeader = React.createFactory React.createClass
+  displayName: 'LostUserConfigsHeader'
   render: ->
     (div {style:{display: 'flex', flexDirection:'row', justifyContent:'space-between'}}, [
       (div {}, "总流失: #{@props.ratio['total']}"),
@@ -26,15 +33,16 @@ LostPageHeader = React.createFactory React.createClass
       (div {}, "全成功且只有一个邮箱: #{@props.ratio['all_success_and_single_mailbox_count']}, #{(@props.ratio['all_success_and_single_mailbox_count'] / @props.ratio['all_success'] * 100 ).toFixed(2)}%")
     ])
 
-_LostTable = React.createFactory React.createClass({
-    displayName: 'LostTable'
+
+LostUserConfigsTable = AutoSizableTable React.createFactory React.createClass({
+    displayName: 'LostUserConfigsTable'
     render: ->
 
       data =  []
       for user, all_fail of @props.lost
         data.push {user, 'all_fail': all_fail, 'emails': @props.emails[user]}
-      tableHeight = (data.length + 1) * 50
-      (div {}, [(Table {rowHeight: 50,headerHeight: 50,rowsCount: data.length, width: @props.tableWidth, height: tableHeight},
+      tableHeight = (data.length + 1) * 50 + 10
+      (div {}, [(Table {rowHeight: 50, headerHeight: 50,rowsCount: data.length, width: @props.tableWidth, height: tableHeight},
         [
           (Column {
             width: 150, header: (Cell {}, "IMEI (共#{@props.ratio['total']}人)"), cell: ((props)->
@@ -61,10 +69,10 @@ _LostTable = React.createFactory React.createClass({
   })
 
 
-_ConfigTable = React.createFactory React.createClass {
+ConfigTable = AutoSizableTable React.createFactory React.createClass {
   displayName: 'ConfigTable'
   render: ->
-    tableHeight = (@props.configs.length + 1) * 50
+    tableHeight = (@props.configs.length + 1) * 50 + 10
     configs = @props.configs
     (Table {rowHeight: 50, headerHeight: 50, rowsCount: @props.configs.length, width: @props.tableWidth, height: tableHeight},
       [
@@ -123,20 +131,4 @@ _ConfigTable = React.createFactory React.createClass {
     )
 }
 
-LostTable = AutoSizableTable _LostTable
-ConfigTable = AutoSizableTable _ConfigTable
-
-get_next_day_lost = ->
-
-  ReactDOM.render (_Loading {type:'bars', color:'#e3e3e3'}), document.getElementById("content")
-
-  date = $('#date_survival').val()
-  interval_unit = $('#interval_unit').val()
-  $.getJSON url, {date: date, interval_unit:interval_unit}, (response) ->
-    ReactDOM.render (LostPageHeaderF {ratio:response.ratio, date: date}), document.getElementById("header")
-    ReactDOM.render (LostTable {lost:response.lost, emails:response.user_emails, ratio:response.ratio}), document.getElementById("content")
-
-window.get_next_day_lost = get_next_day_lost
-module.exports.LostPageHeader = LostPageHeader
-module.exports.LostTable = LostTable
-module.exports.ConfigTable = ConfigTable
+module.exports.LostUserConfigs = LostUserConfigs

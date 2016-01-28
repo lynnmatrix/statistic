@@ -1,6 +1,5 @@
 import logging
 
-import simplejson as simplejson
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render, render_to_response
@@ -11,7 +10,7 @@ from django.utils.timezone import get_current_timezone
 
 from statistic import controller
 
-from statistic.models import Activedevicelog, AnalyzeRecord, UserSurvival, Deviceemaillog, Userconfiglog
+from statistic.models import Userconfiglog
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +29,6 @@ def user_survivals_origin(request):
 
 
 def __get_request_date(request):
-    request_date_str = None
     if request.POST:
         request_date_str = request.POST.get('date')
     else:
@@ -46,10 +44,9 @@ def __get_request_date(request):
 
 
 def __get_request_interval_unit(request):
-    '''
+    """
     :return: 1 day, 2 week, 3 month
-    '''
-    unit = 1
+    """
     if request.POST:
         unit = request.POST.get('interval_unit', 1)
     else:
@@ -57,21 +54,11 @@ def __get_request_interval_unit(request):
     return unit
 
 
-@login_required
-def user_survivals(request):
-    request_date = __get_request_date(request)
-    interval_unit = __get_request_interval_unit(request)
-    user_survivals_data = controller.get_user_survivals_origin(request_date, interval_unit)
+def __user_survivals_origin(request, date, interval_unit):
+    user_survivals_data = controller.get_user_survivals_origin(date, interval_unit)
 
-    data = count_survival(interval_unit, request_date, user_survivals_data)
-
-    data.update({
-        'date': request_date.strftime('%Y-%m-%d'),
-        'unit': interval_unit,
-        'survivals': user_survivals_data,
-    })
-
-    return render(request, 'statistic/user_survivals.html', data)
+    return render(request, 'statistic/user_survivals_origin.html',
+                  {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d'), 'unit': interval_unit})
 
 
 def count_survival(user_survivals_data):
@@ -101,28 +88,6 @@ def count_survival(user_survivals_data):
                                'last_week': last_week}}
 
 
-def __user_survivals_origin(request, date, interval_unit):
-    user_survivals_data = controller.get_user_survivals_origin(date, interval_unit)
-
-    return render(request, 'statistic/user_survivals_origin.html',
-                  {'survivals': user_survivals_data, 'date': date.strftime('%Y-%m-%d'), 'unit': interval_unit})
-
-
-@login_required
-def get_lost(request):
-    request_date = __get_request_date(request)
-    interval_unit = __get_request_interval_unit(request)
-
-    user_survivals_data = controller.get_user_survivals_origin(request_date, interval_unit)
-
-    lost_data = controller.analyze_lost(user_survivals_data)
-
-    lost_data['date'] = request_date
-    lost_data['interval_unit'] = interval_unit
-
-    return JsonResponse(lost_data)
-
-
 @login_required
 def get_survivals(request):
     request_date = __get_request_date(request)
@@ -143,6 +108,21 @@ def get_survivals(request):
 
     data['survivals'] = survivals
     return JsonResponse(data)
+
+
+@login_required
+def get_lost(request):
+    request_date = __get_request_date(request)
+    interval_unit = __get_request_interval_unit(request)
+
+    user_survivals_data = controller.get_user_survivals_origin(request_date, interval_unit)
+
+    lost_data = controller.analyze_lost(user_survivals_data)
+
+    lost_data['date'] = request_date
+    lost_data['interval_unit'] = interval_unit
+
+    return JsonResponse(lost_data)
 
 
 @login_required

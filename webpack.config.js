@@ -5,7 +5,7 @@ module.exports = {
     entry: [
         "webpack-dev-server/client?http://0.0.0.0:8080",
         'webpack/hot/only-dev-server',
-        './statistic/static/statistic/js/lost.coffee',
+        './statistic/static/statistic/js/user-config.coffee',
         './statistic/static/statistic/js/index.coffee'
 
     ],
