@@ -79,26 +79,26 @@ def analyze_lost(user_survivals_data):
     # logger.info("user lost %d", len(users_lost))
 
     user_lost_cause_failure = {}
-    user_emails = {}
+    user_config_logs = {}
     all_fail_count = len(users_lost)
 
     for user_lost in users_lost:
         user_lost_cause_failure[user_lost] = True
-        user_emails[user_lost] = {'success': [], 'fail': []}
+        user_config_logs[user_lost] = {'success': [], 'fail': []}
 
     config_logs = Userconfiglog.objects.filter(imei__in=users_lost)
 
     for config_log in config_logs:
 
         if config_log.issuccess:
-            user_emails[config_log.imei]['success'].append(config_log.email)
+            user_config_logs[config_log.imei]['success'].append(config_log.email)
             if user_lost_cause_failure[config_log.imei]:
                 user_lost_cause_failure[config_log.imei] = False
                 all_fail_count -= 1
         else:
-            user_emails[config_log.imei]['fail'].append(config_log.email)
+            user_config_logs[config_log.imei]['fail'].append(config_log.email)
 
-    # logger.info("%s", user_emails)
+    # logger.info("%s", user_config_logs)
     # logger.info("%s", user_lost_cause_failure)
 
     all_fail_qq_163 = 0
@@ -107,16 +107,16 @@ def analyze_lost(user_survivals_data):
 
     for user, all_fail in user_lost_cause_failure.iteritems():
         if all_fail:
-            for email in user_emails[user]['fail']:
+            for email in user_config_logs[user]['fail']:
                 if email.find('qq.com') != -1 or email.find('163.com') != -1 or email.find('126.com') != -1:
                     all_fail_qq_163 += 1
                     break
         else:
             success_mailboxes = Set()
             fail_mailboxes = Set()
-            for email in user_emails[user]['success']:
+            for email in user_config_logs[user]['success']:
                 success_mailboxes.add(email)
-            for email in user_emails[user]['fail']:
+            for email in user_config_logs[user]['fail']:
                 fail_mailboxes.add(email)
 
             if success_mailboxes.issuperset(fail_mailboxes):
@@ -132,7 +132,7 @@ def analyze_lost(user_survivals_data):
                   'all_success': all_success_count,
                   'all_success_and_single_mailbox_count': all_success_and_single_mailbox_count
                   },
-        'user_emails': user_emails
+        'user_config_logs': user_config_logs
     }
     # logger.info("result %s", result)
     return result

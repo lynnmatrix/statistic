@@ -4,7 +4,7 @@ FixedDataTable = require 'fixed-data-table'
 Loading = require 'react-loading'
 AutoSizableTable = require './autosizabletable.coffee'
 
-{form, input, div, label, option, button, select} = React.DOM
+{input, div, label, option, select} = React.DOM
 Table = React.createFactory FixedDataTable.Table
 Column = React.createFactory FixedDataTable.Column
 Cell = React.createFactory FixedDataTable.Cell
@@ -36,6 +36,38 @@ $.ajaxSetup(
     }
 )
 
+LostPage = React.createClass {
+  render: ->
+    (div {id:'lost_page', style:{margin:'15px 15px'}}, [
+      (LostFormF {onQuerySurvivalRate:@queryLost, onQueryLostUsers:@queryLostUsers}),
+      (div {id:'lost_rate', style:{
+        marginTop:'20px'
+      }})
+    ])
+
+  queryLost: ->
+    @showLoading()
+
+    $.post url_get_survivals, @getQueryParams(), (response) ->
+      ReactDOM.render (SurvivalTable {survivals: response.survivals, survival_count: response.survival_count}),
+        document.getElementById('lost_rate')
+
+  queryLostUsers: ->
+    @showLoading()
+
+    $.post url_get_lost, @getQueryParams(), (response) ->
+      ReactDOM.render (LostRate {ratio: response.ratio, lost: response.lost, emails:response.user_config_logs}),
+        document.getElementById('lost_rate')
+
+  getQueryParams: ->
+    date = $('#date_survival').val()
+    interval_unit = $('#interval_unit').val()
+    {date: date, interval_unit:interval_unit}
+
+  showLoading: ->
+    ReactDOM.render (_Loading {type:'bars', color:'#0090e0'}), document.getElementById('lost_rate')
+}
+
 LostForm = React.createClass {
   displayName: 'LostForm',
   getInitialState: ->
@@ -58,8 +90,8 @@ LostForm = React.createClass {
         })])]),
       (div {style: rowStyle}, [
         (ButtonGroup {bsSize:'small'}, [
-          (Button {onClick: @props.onQueryLostRate}, '留存率'),
-          (Button {onClick: @props.onQueryLostRate}, '流失用户'),
+          (Button {onClick: @props.onQuerySurvivalRate}, '留存率'),
+          (Button {onClick: @props.onQueryLostUsers}, '流失用户'),
         ])
 
         (label {htmlFor: 'interval_unit'}, ['所在的',
@@ -141,29 +173,11 @@ SurvivalTable = AutoSizableTable React.createFactory React.createClass {
 LostRate = React.createFactory React.createClass {
   displayName: 'LostRate',
   render: ->
-    (div {}, [(LostPageHeader {ratio: @props.ratio, date: @props.date}),
+    (div {}, [(LostPageHeader {ratio: @props.ratio}),
       (LostTable {lost: @props.lost, emails: @props.emails, ratio: @props.ratio})
     ])
 }
 
-LostPage = React.createClass {
-  render: ->
-    (div {id:'lost_page', style:{margin:'15px 15px'}}, [
-      (LostFormF {onQueryLostRate:@queryLost, user_survivals:{}}),
-      (div {id:'lost_rate', style:{
-        marginTop:'20px'
-      }})
-    ])
 
-  queryLost: ->
-    ReactDOM.render (_Loading {type:'bars', color:'#0090e0'}), document.getElementById('lost_rate')
-
-    date = $('#date_survival').val()
-    interval_unit = $('#interval_unit').val()
-    $.post url_get_survivals, {date: date, interval_unit:interval_unit}, (response) ->
-#      ReactDOM.render (LostRate {date: date, ratio:response.ratio, emails: response.user_emails, lost: response.lost}),
-      ReactDOM.render (SurvivalTable {survivals: response.survivals, survival_count: response.survival_count}),
-        document.getElementById('lost_rate')
-}
 
 module.exports = LostPage;
