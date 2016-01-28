@@ -2,6 +2,7 @@ React = require 'react'
 ReactDOM = require 'react-dom'
 FixedDataTable = require 'fixed-data-table'
 Loading = require 'react-loading'
+AutoSizableTable = require './autosizabletable.coffee'
 
 {form, input, div, label, option, button, select} = React.DOM
 Table = React.createFactory FixedDataTable.Table
@@ -84,26 +85,52 @@ LostForm = React.createClass {
 }
 LostFormF = React.createFactory LostForm
 
-LostRateTable = React.createClass {
-  displayName: 'LostRateTable',
+SurvivalTable = AutoSizableTable React.createFactory React.createClass {
+  displayName: 'SurvivalTable',
   render: ->
-    data = []
-    for imei, user_survival in @props.user_survivals
-      data.push user_survival
+    data = @props.survivals
 
     if data.length > 0
       tableHeight = (data.length + 1) * 50
       (Table {rowHeight: 50, headerHeight: 50, rowsCount: data.length, width: @props.tableWidth, height: tableHeight}, [
         (Column {
-          width: 150, header: (Cell {}, "IMEI (#{@props.survival_count .0 }, 100%)"), cell: ((props)->
+          width: 150, header: (Cell {}, "IMEI (#{@props.survival_count['total'] }, 100%)"), cell: ((props)->
             (Cell props, (div {}, data[props.rowIndex]['imei']))
           )
         }),
         (Column {
           width: 150,
-          header: (Cell {}, "1天后 (#{ @props.survival_count .1 }, #{ @props.survival_count .1 / @props.survival_count .0 * 100 }%)"),
+          header: (Cell {}, "1天后 (#{ @props.survival_count['day'] }, #{ (@props.survival_count['day'] / @props.survival_count['total'] * 100).toFixed(2)}%)"),
           cell: ((props)->
-            (Cell props, (div {}, data[props.rowIndex]['survival_day']))
+            (Cell props, (div {}, if data[props.rowIndex]['survival_day'] then 'True' else 'False'))
+          )
+        }),
+        (Column {
+          width: 150,
+          header: (Cell {}, "1周后 (#{ @props.survival_count['week'] }, #{ (@props.survival_count['week'] / @props.survival_count['total'] * 100).toFixed(2)}%)"),
+          cell: ((props)->
+            (Cell props, (div {}, if data[props.rowIndex]['survival_week'] then 'True' else 'False'))
+          )
+        }),
+        (Column {
+          width: 150,
+          header: (Cell {}, "1月后 (#{ @props.survival_count['month'] }, #{ (@props.survival_count['month'] / @props.survival_count['total'] * 100).toFixed(2)}%)"),
+          cell: ((props)->
+            (Cell props, (div {}, if data[props.rowIndex]['survival_month'] then 'True' else 'False'))
+          )
+        }),
+        (Column {
+          width: 150,
+          header: (Cell {}, "1年后 (#{ @props.survival_count['year'] }, #{ (@props.survival_count['year'] / @props.survival_count['total'] * 100).toFixed(2)}%)"),
+          cell: ((props)->
+            (Cell props, (div {}, if data[props.rowIndex]['survival_year'] then 'True' else 'False'))
+          )
+        }),
+        (Column {
+          width: 150,
+          header: (Cell {}, "最近一周 (#{ @props.survival_count['last_week'] }, #{ (@props.survival_count['last_week'] / @props.survival_count['total'] * 100).toFixed(2)}%)"),
+          cell: ((props)->
+            (Cell props, (div {}, if data[props.rowIndex]['survival_last_week'] then 'True' else 'False'))
           )
         }),
       ])
@@ -123,7 +150,9 @@ LostPage = React.createClass {
   render: ->
     (div {id:'lost_page', style:{margin:'15px 15px'}}, [
       (LostFormF {onQueryLostRate:@queryLost, user_survivals:{}}),
-      (div {id:'lost_rate'})
+      (div {id:'lost_rate', style:{
+        marginTop:'20px'
+      }})
     ])
 
   queryLost: ->
@@ -131,8 +160,9 @@ LostPage = React.createClass {
 
     date = $('#date_survival').val()
     interval_unit = $('#interval_unit').val()
-    $.post url_get_lost, {date: date, interval_unit:interval_unit}, (response) ->
-      ReactDOM.render (LostRate {date: date, ratio:response.ratio, emails: response.user_emails, lost: response.lost}),
+    $.post url_get_survivals, {date: date, interval_unit:interval_unit}, (response) ->
+#      ReactDOM.render (LostRate {date: date, ratio:response.ratio, emails: response.user_emails, lost: response.lost}),
+      ReactDOM.render (SurvivalTable {survivals: response.survivals, survival_count: response.survival_count}),
         document.getElementById('lost_rate')
 }
 

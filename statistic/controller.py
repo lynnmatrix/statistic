@@ -30,7 +30,7 @@ def get_user_survivals_origin(date, interval_unit):
         date_range_end = date + monthdelta(1)
 
     user_survivals_data = UserSurvival.objects.filter(firsttime__range=[date, date_range_end])
-    return user_survivals_data.order_by('lasttime').reverse()
+    return user_survivals_data.order_by('-lasttime')
 
 
 def analyze_survival():

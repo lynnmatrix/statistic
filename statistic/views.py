@@ -63,29 +63,42 @@ def user_survivals(request):
     interval_unit = __get_request_interval_unit(request)
     user_survivals_data = controller.get_user_survivals_origin(request_date, interval_unit)
 
-    logger.info("count %d", len(user_survivals_data))
+    data = count_survival(interval_unit, request_date, user_survivals_data)
 
+    data.update({
+        'date': request_date.strftime('%Y-%m-%d'),
+        'unit': interval_unit,
+        'survivals': user_survivals_data,
+    })
+
+    return render(request, 'statistic/user_survivals.html', data)
+
+
+def count_survival(user_survivals_data):
     # [total, day,week,month,year, last_week]
-    survival_count = [0, 0, 0, 0, 0, 0]
+    total = 0
+    day = 0
+    week = 0
+    month = 0
+    year = 0
+    last_week = 0
 
     for user_survival in user_survivals_data:
-        survival_count[0] += 1
+        total += 1
         if user_survival.survival_day():
-            survival_count[1] += 1
+            day += 1
             if user_survival.survival_week():
-                survival_count[2] += 1
+                week += 1
                 if user_survival.survival_month():
-                    survival_count[3] += 1
+                    month += 1
                     if user_survival.survival_year():
-                        survival_count[4] += 1
+                        year += 1
 
         if user_survival.survival_last_week():
-            survival_count[5] += 1
+            last_week += 1
 
-    return render(request, 'statistic/user_survivals.html', {'survivals': user_survivals_data,
-                                                             'date': request_date.strftime('%Y-%m-%d'),
-                                                             'survival_count': survival_count,
-                                                             'unit': interval_unit})
+    return {'survival_count': {'total': total, 'day': day, 'week': week, 'month': month, 'year': year,
+                               'last_week': last_week}}
 
 
 def __user_survivals_origin(request, date, interval_unit):
@@ -108,6 +121,28 @@ def get_lost(request):
     lost_data['interval_unit'] = interval_unit
 
     return JsonResponse(lost_data)
+
+
+@login_required
+def get_survivals(request):
+    request_date = __get_request_date(request)
+    interval_unit = __get_request_interval_unit(request)
+
+    user_survivals_data = controller.get_user_survivals_origin(request_date, interval_unit)
+    data = count_survival(user_survivals_data)
+    survivals = []
+    for survival in user_survivals_data:
+        survivals.append({
+            'imei': survival.imei,
+            'survival_day': survival.survival_day(),
+            'survival_week': survival.survival_week(),
+            'survival_month': survival.survival_month(),
+            'survival_year': survival.survival_year(),
+            'survival_last_week': survival.survival_last_week()
+        })
+
+    data['survivals'] = survivals
+    return JsonResponse(data)
 
 
 @login_required
