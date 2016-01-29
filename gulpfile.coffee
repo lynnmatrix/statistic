@@ -2,7 +2,7 @@ gulp = require 'gulp'
 gutil = require 'gulp-util'
 webpack = require("webpack")
 WebpackDevServer = require("webpack-dev-server")
-webpackConfig = require("./webpack.config.js")
+webpackConfig = require("./webpack.local.config.js")
 
 # Create a single instance of the compiler to allow caching.
 devCompiler = webpack(webpackConfig)
@@ -37,7 +37,3 @@ gulp.task 'default', ->
   gulp.start 'build'
 
 gulp.task 'build', ['webpack:build-dev']
-
-gulp.task 'watch', ->
-  gulp.watch './statistic/static/statistic/js/*.coffee', ['build']
-  gulp.watch './statistic/static/statistic/css/*.css', ['build']

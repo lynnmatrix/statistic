@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     # 'debug_panel'
+    'webpack_loader',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -84,6 +85,7 @@ TEMPLATES = [
                 "django_jinja.builtins.extensions.UrlsExtension",
                 "django_jinja.builtins.extensions.StaticFilesExtension",
                 "django_jinja.builtins.extensions.DjangoFiltersExtension",
+                "webpack_loader.contrib.jinja2ext.WebpackExtension",
             ],
             "bytecode_cache": {
                 "name": "default",
@@ -199,7 +201,27 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'assets'), # We do this so that django's collectstatic copies or our bundles to the STATIC_ROOT or syncs them to whatever storage we use.
+)
+
 DEBUG_TOOLBAR_PATCH_SETTINGS = True
 DEBUG_TOOLBAR_CONFIG = {
     'JQUERY_URL': '//cdn.bootcss.com/jquery/2.1.4/jquery.js'
 }
+
+
+WEBPACK_LOADER = {
+     'DEFAULT': {
+        'BUNDLE_DIR_NAME': 'bundles/',
+        'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats.json')
+    }
+}
+
+if not DEBUG:
+    WEBPACK_LOADER.update({
+        'DEFAULT': {
+            'BUNDLE_DIR_NAME': 'dist/',
+            'STATS_FILE': os.path.join(BASE_DIR, 'webpack-stats-prod.json')
+        }
+    })
