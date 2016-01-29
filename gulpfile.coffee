@@ -8,7 +8,7 @@ webpackConfig = require("./webpack.local.config.js")
 devCompiler = webpack(webpackConfig)
 gulp.task "webpack:build-dev", (callback) ->
 
-  # Run webpack.
+# Run webpack.
   devCompiler.run (err, stats) ->
     throw new gutil.PluginError("webpack:build-dev", err)  if err
     gutil.log "[webpack:build-dev]", stats.toString(colors: true)
@@ -18,14 +18,17 @@ gulp.task "webpack:build-dev", (callback) ->
   return
 
 devServer = {}
-gulp.task "webpack-dev-server", (callback) ->
 
-  # Start a webpack-dev-server.
+gulp.task "webpack-dev-server", (callback) ->
+# Start a webpack-dev-server.
   devServer = new WebpackDevServer(webpack(webpackConfig),
-    hot: true
+    publicPath: webpackConfig.output.publicPath,
+    hot: true,
+    inline: true,
+    historyApiFallback: true
     watchOptions:
-        aggregateTimeout: 100
-        poll: 300
+      aggregateTimeout: 100
+      poll: 300
   )
   devServer.listen 8080, "0.0.0.0", (err) ->
     throw new gutil.PluginError("webpack-dev-server", err) if err

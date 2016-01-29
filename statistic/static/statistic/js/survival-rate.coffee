@@ -15,7 +15,7 @@ SurvivalTable = AutoSizableTable React.createFactory React.createClass {
     data = @props.survivals
 
     if data.length > 0
-      tableHeight = (data.length + 1) * 50 + 10
+      tableHeight = (data.length + 1) * 50 + 2
       (Table {rowHeight: 50, headerHeight: 50, rowsCount: data.length, width: @props.tableWidth, height: tableHeight}, [
         (Column {
           width: 150, header: (Cell {}, "IMEI (#{@props.survival_count['total'] }, 100%)"), cell: ((props)->
