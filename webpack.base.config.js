@@ -8,7 +8,10 @@ var webpack = require('webpack')
 module.exports = {
   context: __dirname,
 
-  entry: ['./statistic/static/statistic/js/index.coffee'],
+  entry: {
+      app: './statistic/static/statistic/js/index.coffee',
+      vendors: ['react', 'react-dom', 'react-bootstrap', 'react-router', 'jquery', 'fixed-data-table/dist/fixed-data-table.css']
+  },
 
   output: {
       path: path.resolve("./assets/bundles/"),
@@ -16,6 +19,7 @@ module.exports = {
   },
 
   plugins: [
+      new webpack.optimize.CommonsChunkPlugin('vendors', "[name]-[hash].js")
   ], // add all common plugins here
 
   module: {

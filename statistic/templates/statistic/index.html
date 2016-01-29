@@ -11,13 +11,14 @@
         var url_config = "{{ url('config') }}"
     </script>
 
-
-    {{  render_bundle('main') }}
     <link href="https://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.css" rel="stylesheet">
-
 
 </head>
 <body>
 <div id="container"></div>
 </body>
+
+{{ render_bundle('app') }}
+{{ render_bundle('vendors') }}
+
 </html>

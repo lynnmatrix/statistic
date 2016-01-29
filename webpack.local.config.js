@@ -4,7 +4,7 @@ var BundleTracker = require('webpack-bundle-tracker')
 var config = require('./webpack.base.config.js')
 
 // Use webpack dev server
-config.entry = [
+config.entry.app = [
         "webpack-dev-server/client?http://0.0.0.0:8080",
         'webpack/hot/only-dev-server',
         './statistic/static/statistic/js/index.coffee'
