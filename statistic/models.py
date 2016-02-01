@@ -394,12 +394,12 @@ class UserSurvival(models.Model):
 
     def survival_last_week(self):
         from django.utils import timezone
-        return self.lasttime + timedelta(weeks=1) > timezone.now()
+        return self.lasttime + timedelta(weeks=1) >= timezone.now()
 
     def __survival(self, delta):
         end_time = self.firsttime + delta;
         if end_time <= timezone.now():
-            return self.lasttime > self.firsttime + delta
+            return self.lasttime >= self.firsttime + delta
         else:
             return None
 

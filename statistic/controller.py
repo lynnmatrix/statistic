@@ -1,11 +1,11 @@
+import logging
 from sets import Set
 
 import monthdelta as monthdelta
 from django.utils import timezone
-from django.utils.timezone import get_current_timezone
-import logging
 
-from statistic.models import UserSurvival, AnalyzeRecord, Activedevicelog, Deviceemaillog, Userconfiglog
+from statistic.models import UserSurvival, AnalyzeRecord, Activedevicelog, Userconfiglog
+from statistic.util.datehelper import trim_2_local_day_start
 
 logger = logging.getLogger(__name__)
 
@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 def get_user_survivals_origin(date, interval_unit):
     analyze_survival()
 
-    date = timezone.localtime(date)
-    date_array = date.timetuple()
-    date = timezone.datetime(date_array[0], date_array[1], date_array[2], tzinfo=get_current_timezone())
+    date = trim_2_local_day_start(date)
 
     date_range_end = date + timezone.timedelta(days=1)
     if '1' == interval_unit:
@@ -47,7 +45,11 @@ def analyze_survival():
         analyze_record = AnalyzeRecord(action=action_str)
 
     analyze_record.time = timezone.now()
+    i =0
+    count = device_logs.count()
     for log in device_logs:
+        logger.info("%d/%d", i, count)
+        i +=1
         try:
             user_survival = UserSurvival.objects.get(imei=log.imei)
         except UserSurvival.DoesNotExist:
@@ -60,7 +62,7 @@ def analyze_survival():
                 survival.delete()
 
         if user_survival is None:
-            user_survival = UserSurvival(imei=log.imei, firsttime=log.time)
+            user_survival = UserSurvival(imei=log.imei, firsttime=log.time, lasttime=log.time)
 
         if log.time > user_survival.lasttime:
             user_survival.lasttime = log.time
