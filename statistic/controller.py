@@ -62,7 +62,11 @@ def analyze_survival():
         if user_survival is None:
             user_survival = UserSurvival(imei=log.imei, firsttime=log.time)
 
-        user_survival.lasttime = log.time
+        if log.time > user_survival.lasttime:
+            user_survival.lasttime = log.time
+        if log.time < user_survival.firsttime:
+            user_survival.firsttime = log.time
+
         user_survival.save()
 
     if device_logs.count() > 0:
