@@ -10,7 +10,9 @@ ButtonGroup = React.createFactory ButtonGroup
 Button = React.createFactory Button
 
 {LostUserConfigs}= require('./user-config.coffee')
-{SurvivalTable} = require './survival-rate.coffee'
+{SurvivalTable} = require './survival-detail.coffee'
+
+SurvivalRateChart = React.createFactory require('./survival-rate.jsx')
 
 $ = require 'jquery'
 $.ajaxSetup(
@@ -35,15 +37,36 @@ $.ajaxSetup(
 LostPage = React.createClass {
   render: ->
     (div {id:'lost_page', style:{margin:'15px 15px'}}, [
-      (LostForm {onQuerySurvivalRate:@queryLost, onQueryLostUsers:@queryLostUsers}),
+      (LostForm {onQuerySurvivalRate:@querySurvivalRate, onQueryLostUsers:@queryLostUsers, onQuerySurvivalDetail:@querySurvivalDetail}),
       (div {id:'lost_content', style:{
         marginTop:'20px'
       }})
     ])
 
-  queryLost: ->
+  querySurvivalRate: ->
     @showLoading()
+    $.post url_get_survival_rate, @getQueryParams(), (response) ->
+      name = 'unknown'
 
+      if 2 == response.unit
+        name = 'week'
+      else if 3 == response.unit
+        name = 'month'
+
+      data = [{'name': name, values: response.values}]
+
+      dataset = $.extend(true, {}, data[0])
+      rateData = [dataset]
+      total = response.total
+      values = dataset.values
+      for point in values
+        point['y'] = point['y'] / total
+
+      ReactDOM.render (SurvivalRateChart {lineData:data, rateData: rateData}), document.getElementById('lost_content')
+
+
+  querySurvivalDetail: ->
+    @showLoading()
     $.post url_get_survivals, @getQueryParams(), (response) ->
       ReactDOM.render (SurvivalTable {survivals: response.survivals, survival_count: response.survival_count}),
         document.getElementById('lost_content')
@@ -87,6 +110,7 @@ LostForm = React.createFactory React.createClass {
       (div {style: rowStyle}, [
         (ButtonGroup {bsSize:'small'}, [
           (Button {onClick: @props.onQuerySurvivalRate}, '留存率'),
+          (Button {onClick: @props.onQuerySurvivalDetail}, '留存详情'),
           (Button {onClick: @props.onQueryLostUsers}, '流失用户'),
         ])
 
@@ -108,7 +132,7 @@ LostForm = React.createFactory React.createClass {
     @setState {date: e.target.value}
 
   handleUnitChange: (e)->
-    @setState {interval_unit: e.target.value()}
+    @setState {interval_unit: e.target.value}
 
 }
 

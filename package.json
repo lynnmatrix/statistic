@@ -13,6 +13,7 @@
     "babel": "^6.3.26",
     "babel-core": "^6.4.5",
     "babel-loader": "^6.2.1",
+    "babel-preset-react": "^6.3.13",
     "bootstrap": "^3.3.6",
     "bourbon": "^4.2.6",
     "cjsx-loader": "^2.1.0",

@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.timezone import get_current_timezone
 
 from statistic import controller
+from statistic.analyze import survival
 
 from statistic.models import Userconfiglog
 
@@ -86,6 +87,15 @@ def count_survival(user_survivals_data):
 
     return {'survival_count': {'total': total, 'day': day, 'week': week, 'month': month, 'year': year,
                                'last_week': last_week}}
+
+
+@login_required
+def get_survival_rate(request):
+    request_date = __get_request_date(request)
+    user_window = __get_request_interval_unit(request)
+    user_window = int(user_window)
+    result = survival.get_survival_rate(request_date, user_window, 2)
+    return JsonResponse(result)
 
 
 @login_required

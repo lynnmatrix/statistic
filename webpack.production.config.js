@@ -29,7 +29,7 @@ config.plugins = config.plugins.concat([
 // Add a loader for JSX files with react-hot enabled
 config.module.loaders.concat([
         {test: /\.coffee$/, exclude: /node_modules/, loaders: ['coffee']},
-        {test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel']},
+        {test: /\.jsx?$/, exclude: /node_modules/, loaders: ['babel?presets[]=react']},
         {test: /\.cjsx$/, exclude: /node_modules/, loaders: ['coffee', 'cjsx']}
     ]
 )
