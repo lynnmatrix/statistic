@@ -99,6 +99,25 @@ def get_survival_rate(request):
 
 
 @login_required
+def get_survival_rate_tendency(request):
+    request_date = __get_request_date(request)
+    user_window = __get_request_interval_unit(request)
+    user_window = int(user_window)
+
+    # interval : month
+    result = survival.get_survival_rate_tendency(request_date, timezone.now(), user_window, 3)
+    values = []
+    for i, point in enumerate(result):
+        y = 0
+        if point[1] > 0:
+            y = point[2] * 1.0 / point[1]
+        values.append({'x': i, 'y': y})
+
+    result = {'name': 'month', 'values': values}
+    return JsonResponse(result)
+
+
+@login_required
 def get_survivals(request):
     request_date = __get_request_date(request)
     interval_unit = __get_request_interval_unit(request)

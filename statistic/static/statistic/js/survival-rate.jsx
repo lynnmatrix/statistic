@@ -38,5 +38,26 @@ var SurvivalRateChart = React.createClass({
     }
 });
 
-module.exports = SurvivalRateChart;
+var SurvivalRateTendencyChart = React.createClass({
+    render: function () {
 
+        return (
+            <div>
+                <LineChart
+                    legend={true}
+                    data={this.props.rateData}
+                    width={600}
+                    height={400}
+                    viewBoxObject={{x: 0, width: 500, height: 400 }}
+                    title="Survival Rate Tendency Chart"
+                    yAxisLabel="Survival Rate"
+                    xAxisLabel="Time"
+                    gridHorizontal={true}
+                />
+
+            </div>)
+    }
+});
+
+module.exports.SurvivalRateChart = SurvivalRateChart;
+module.exports.SurvivalRateTendencyChart = SurvivalRateTendencyChart;

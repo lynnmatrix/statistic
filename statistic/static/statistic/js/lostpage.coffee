@@ -12,7 +12,9 @@ Button = React.createFactory Button
 {LostUserConfigs}= require('./user-config.coffee')
 {SurvivalTable} = require './survival-detail.coffee'
 
-SurvivalRateChart = React.createFactory require('./survival-rate.jsx')
+{SurvivalRateChart, SurvivalRateTendencyChart} = require('./survival-rate.jsx')
+SurvivalRateChart = React.createFactory SurvivalRateChart
+SurvivalRateTendencyChart = React.createFactory SurvivalRateTendencyChart
 
 $ = require 'jquery'
 $.ajaxSetup(
@@ -37,7 +39,7 @@ $.ajaxSetup(
 LostPage = React.createClass {
   render: ->
     (div {id:'lost_page', style:{margin:'15px 15px'}}, [
-      (LostForm {onQuerySurvivalRate:@querySurvivalRate, onQueryLostUsers:@queryLostUsers, onQuerySurvivalDetail:@querySurvivalDetail}),
+      (LostForm {onQuerySurvivalRate:@querySurvivalRate, onQueryLostUsers:@queryLostUsers, onQuerySurvivalDetail:@querySurvivalDetail, onQuerySurvivalRateTendency:@querySurvivalRateTendency}),
       (div {id:'lost_content', style:{
         marginTop:'20px'
       }})
@@ -63,6 +65,11 @@ LostPage = React.createClass {
         point['y'] = point['y'] / total
 
       ReactDOM.render (SurvivalRateChart {lineData:data, rateData: rateData}), document.getElementById('lost_content')
+
+  querySurvivalRateTendency: ->
+    @showLoading()
+    $.post url_get_survival_rate_tendency, @getQueryParams(), (response) ->
+      ReactDOM.render (SurvivalRateTendencyChart {rateData:[response]}), document.getElementById('lost_content')
 
 
   querySurvivalDetail: ->
@@ -110,6 +117,7 @@ LostForm = React.createFactory React.createClass {
       (div {style: rowStyle}, [
         (ButtonGroup {bsSize:'small'}, [
           (Button {onClick: @props.onQuerySurvivalRate}, '留存率'),
+          (Button {onClick: @props.onQuerySurvivalRateTendency}, '月留存率走势'),
           (Button {onClick: @props.onQuerySurvivalDetail}, '留存详情'),
           (Button {onClick: @props.onQueryLostUsers}, '流失用户'),
         ])
